@@ -1,0 +1,11 @@
+{
+  "entity.sigma_companions.companion": "Companion",
+  "itemGroup.sigma_companions": "Sigma Companions",
+  "item.sigma_companions.invitation_akari": "Akari's invitation",
+  "item.sigma_companions.invitation_mio": "Mio's invitation",
+  "item.sigma_companions.invitation_rei": "Rei's invitation",
+  "item.sigma_companions.invitation.tooltip": "Use on a solid block to invite an adult companion",
+  "item.sigma_companions.promise_ring": "Promise ring",
+  "key.sigma_companions.menu": "Open companion menu",
+  "category.sigma_companions": "Sigma Companions"
+}

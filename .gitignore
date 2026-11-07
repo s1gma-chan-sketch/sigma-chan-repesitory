@@ -1,0 +1,16 @@
+.gradle/
+build/
+run/
+run-client/
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+.env
+.env.*
+*.log
+__pycache__/
+.venv/
+release/

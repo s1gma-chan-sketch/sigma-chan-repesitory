@@ -1,0 +1,11 @@
+{
+  "entity.sigma_companions.companion": "Спутница",
+  "itemGroup.sigma_companions": "Sigma Companions",
+  "item.sigma_companions.invitation_akari": "Приглашение Акари",
+  "item.sigma_companions.invitation_mio": "Приглашение Мио",
+  "item.sigma_companions.invitation_rei": "Приглашение Рэй",
+  "item.sigma_companions.invitation.tooltip": "Используй на твёрдом блоке, чтобы пригласить спутницу",
+  "item.sigma_companions.promise_ring": "Кольцо обещания",
+  "key.sigma_companions.menu": "Открыть меню спутницы",
+  "category.sigma_companions": "Sigma Companions"
+}

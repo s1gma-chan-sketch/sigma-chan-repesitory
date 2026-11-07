@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "sigma_companions",
+  "version": "${version}",
+  "name": "Sigma Companions",
+  "description": "Original adult anime companions: friendship, consensual romance, a shared home and optional OpenAI/Anthropic dialogue. Minecraft 1.21.1 Fabric.",
+  "authors": ["s1gma-chan-sketch"],
+  "license": "MIT",
+  "icon": "assets/sigma_companions/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["dev.sigmachan.companions.SigmaCompanions"],
+    "client": ["dev.sigmachan.companions.client.SigmaCompanionsClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

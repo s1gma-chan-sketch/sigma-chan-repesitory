@@ -1,0 +1,11 @@
+[
+  {
+    "modid": "luckystar",
+    "name": "Lucky Star Friends",
+    "description": "Four friendly companions inspired by Lucky Star.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "authorList": ["Community project"],
+    "credits": "Lucky Star and its characters belong to their respective owners. This is an unofficial fan project."
+  }
+]

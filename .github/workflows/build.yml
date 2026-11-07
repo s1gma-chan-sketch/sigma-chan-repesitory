@@ -24,6 +24,7 @@ jobs:
           else
             tail -100 build-ci.log
             grep -A 3 -E 'error:|FAILED|Caused by:|Could not' build-ci.log | head -100 | tr '\n' ' ' | sed 's/-- /\n/g;s/^/::error::/' || true
+            python3 -c 'import pathlib,xml.etree.ElementTree as E; [(print("::error::"+str(f)+" "+x.attrib.get("message",""))) for f in pathlib.Path("build/test-results/test").glob("*.xml") for x in E.parse(f).iter() if x.tag in ("failure","error")]' || true
             exit 1
           fi
       - name: Upload diagnostics

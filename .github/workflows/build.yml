@@ -19,19 +19,13 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Unit tests and production JAR
         run: |
-          set +e
-          ./gradlew build --no-daemon --stacktrace > build-ci.log 2>&1
-          result=$?
-          tail -100 build-ci.log
-          if [ "$result" -ne 0 ]; then
-            python3 - <<'PY'
-            from pathlib import Path
-            lines = [line for line in Path('build-ci.log').read_text().splitlines() if 'error:' in line or 'FAILED' in line or 'Caused by:' in line or 'Could not' in line]
-            for line in lines[:35]:
-                print('::error::' + line.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A'))
-            PY
+          if ./gradlew build --no-daemon --stacktrace > build-ci.log 2>&1; then
+            tail -30 build-ci.log
+          else
+            tail -100 build-ci.log
+            grep -E 'error:|FAILED|Caused by:|Could not' build-ci.log | head -35 | sed 's/^/::error::/' || true
+            exit 1
           fi
-          exit "$result"
       - name: Upload diagnostics
         if: failure()
         uses: actions/upload-artifact@v4

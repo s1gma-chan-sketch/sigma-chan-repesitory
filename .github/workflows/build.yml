@@ -5,7 +5,7 @@ on:
   pull_request:
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,3 +44,13 @@ jobs:
           if-no-files-found: error
       - name: Dedicated server smoke test
         run: python3 tools/server_smoke.py
+      - name: Attach JAR to draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
+          tag="build-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$jar" --target "$GITHUB_SHA" --title "Sigma Companions 0.1.0 — verified build" --notes "Fabric 1.21.1. Unit tests and dedicated-server smoke test passed. Download the JAR below, not the source archives. Draft release: not announced as a stable version." --draft
+          sha256sum "$jar"
+          blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
+          echo "::notice::VERIFIED_JAR_BLOB=${blob}"

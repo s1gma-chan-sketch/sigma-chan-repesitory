@@ -56,7 +56,7 @@ for name, (hair, hair_light, skin, shirt, trousers, accent) in THEMES.items():
     d.rectangle((4,29,11,30), fill=(63,49,54))
     d.point((7,29), fill=accent); d.point((8,29), fill=accent)
     for x in (36,52):
-        d.rectangle((x,27,x+2,y:=29), fill=skin)
+        d.rectangle((x,27,x+2,29), fill=skin)
         d.line((x,26,x+2,26), fill=accent)
     for x in (68,84):
         d.rectangle((x,44,x+3,46), fill=(44,40,49))

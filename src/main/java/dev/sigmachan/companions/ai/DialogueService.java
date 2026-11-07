@@ -22,8 +22,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadLocalRandom;
+
 
 /** Bounded, asynchronous, text-only AI. No tools, commands, keys on clients, or autonomous relationship changes. */
 public final class DialogueService {
@@ -37,7 +36,7 @@ public final class DialogueService {
     private final Map<String, ArrayDeque<ProviderCodec.Message>> histories = new ConcurrentHashMap<>();
     private final Map<UUID, ArrayDeque<Long>> requests = new ConcurrentHashMap<>();
     private final Set<String> inFlight = ConcurrentHashMap.newKeySet();
-    private volatile boolean closed;
+
 
     public DialogueService(CompanionConfig config, MinecraftServer server) { this.config = config; this.server = server; }
     private static String env(String name) { String value = System.getenv(name); return value == null ? "" : value.trim(); }
@@ -76,7 +75,7 @@ public final class DialogueService {
         else request.header("x-api-key", apiKey).header("anthropic-version", "2023-06-01");
         try {
             client.sendAsync(request.build(), HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)).whenComplete((response, error) -> {
-                inFlight.remove(key);
+                if (!inFlight.remove(key)) return; // Disconnected, forgotten, or server stopped while the request was running.
                 String reply;
                 if (error == null && response.statusCode() >= 200 && response.statusCode() < 300) {
                     try {
@@ -114,6 +113,7 @@ public final class DialogueService {
     public void forget(UUID player) {
         requests.remove(player);
         histories.keySet().removeIf(key -> key.startsWith(player.toString() + ":"));
+        inFlight.removeIf(key -> key.startsWith(player.toString() + ":"));
     }
-    public void close() { closed = true; executor.shutdownNow(); histories.clear(); requests.clear(); inFlight.clear(); }
+    public void close() { executor.shutdownNow(); histories.clear(); requests.clear(); inFlight.clear(); }
 }

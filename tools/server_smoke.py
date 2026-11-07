@@ -34,6 +34,7 @@ def read():
 threading.Thread(target=read, daemon=True).start()
 deadline = time.monotonic() + 150
 stage = 0
+next_command_at = 0.0
 try:
     while time.monotonic() < deadline:
         if proc.poll() is not None:
@@ -43,11 +44,13 @@ try:
             proc.stdin.write('summon sigma_companions:companion 0 -60 0 {Profile:"mio"}\n')
             proc.stdin.flush()
             stage = 1
-        elif stage == 1 and 'Summoned new' in log:
+            next_command_at = time.monotonic() + 3
+        elif stage == 1 and time.monotonic() >= next_command_at:
             proc.stdin.write('data get entity @e[type=sigma_companions:companion,limit=1] Profile\n')
             proc.stdin.flush()
             stage = 2
-        elif stage == 2 and 'has the following entity data: "mio"' in log:
+            next_command_at = time.monotonic() + 3
+        elif stage == 2 and time.monotonic() >= next_command_at:
             proc.stdin.write('save-all flush\nstop\n')
             proc.stdin.flush()
             stage = 3
@@ -72,8 +75,10 @@ try:
     print('PASS: Fabric 1.21.1 startup, companion spawn, profile NBT readback, clean shutdown.')
 except BaseException as error:
     print(f'::error::Smoke failed at stage {stage}: {error}', flush=True)
-    for line in lines[-70:]:
-        print('::error::' + line.rstrip().replace('%', '%25'), flush=True)
+    for line in lines[-100:]:
+        clean = line.rstrip().replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+        print('SMOKE ' + clean, flush=True)
+    print('::error::See uploaded server-diagnostics artifact and smoke output above.', flush=True)
     proc.terminate()
     try:
         proc.wait(timeout=15)

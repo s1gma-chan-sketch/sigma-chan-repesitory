@@ -147,7 +147,7 @@ public class CompanionEntity extends PathAwareEntity {
     @Override public boolean damage(DamageSource source, float amount) {
         if (source.getAttacker() instanceof PlayerEntity player && bonds.get(player.getUuid()) != null && bonds.get(player.getUuid()).trust() >= Bond.FRIEND) return false;
         boolean result = super.damage(source, amount);
-        if (result && source.getAttacker() instanceof PathAwareEntity attacker && !(attacker instanceof PlayerEntity) && attacker instanceof Monster) setTarget(attacker);
+        if (result && source.getAttacker() instanceof Monster && source.getAttacker() instanceof net.minecraft.entity.mob.MobEntity attacker) setTarget(attacker);
         return result;
     }
 

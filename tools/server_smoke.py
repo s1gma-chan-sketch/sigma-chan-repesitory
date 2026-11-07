@@ -68,7 +68,8 @@ try:
         if marker not in log:
             raise RuntimeError(f'Missing smoke marker: {marker}')
     for error in ['Exception in server tick loop', 'Failed to start the minecraft server',
-                  'Failed to parse recipe', 'Parsing error loading recipe']:
+                  'Failed to parse recipe', 'Parsing error loading recipe',
+                  'Exception loading entity', 'Unable to summon entity', 'No entity was found']:
         if error in log:
             raise RuntimeError(f'Server error: {error}')
     if proc.returncode != 0:

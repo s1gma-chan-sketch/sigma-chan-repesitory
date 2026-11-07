@@ -57,6 +57,7 @@ public class CompanionEntity extends PathAwareEntity {
     }
 
     @Override protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
         builder.add(PROFILE, 0).add(MODE, 0).add(GESTURE, 0).add(GESTURE_TICKS, 0);
     }
 

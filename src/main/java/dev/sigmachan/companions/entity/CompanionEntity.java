@@ -144,15 +144,15 @@ public class CompanionEntity extends PathAwareEntity {
         return ActionResult.SUCCESS;
     }
 
-    @Override public boolean damage(ServerWorld world, DamageSource source, float amount) {
+    @Override public boolean damage(DamageSource source, float amount) {
         if (source.getAttacker() instanceof PlayerEntity player && bonds.get(player.getUuid()) != null && bonds.get(player.getUuid()).trust() >= Bond.FRIEND) return false;
-        boolean result = super.damage(world, source, amount);
+        boolean result = super.damage(source, amount);
         if (result && source.getAttacker() instanceof PathAwareEntity attacker && !(attacker instanceof PlayerEntity) && attacker instanceof Monster) setTarget(attacker);
         return result;
     }
 
     
-    @Override protected boolean canImmediatelyDespawn(double distanceSquared) { return false; }
+    @Override public boolean canImmediatelyDespawn(double distanceSquared) { return false; }
     @Override public boolean cannotDespawn() { return true; }
 
     @Override public void writeCustomDataToNbt(NbtCompound nbt) {

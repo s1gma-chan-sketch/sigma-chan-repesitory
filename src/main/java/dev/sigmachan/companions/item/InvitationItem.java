@@ -35,7 +35,7 @@ public class InvitationItem extends Item {
             player.sendMessage(Text.literal("Достигнут лимит ваших спутников рядом (настройка сервера)."), false);
             return ActionResult.FAIL;
         }
-        CompanionEntity companion = ModRegistry.COMPANION.create(world, SpawnReason.MOB_SUMMONED);
+        CompanionEntity companion = ModRegistry.COMPANION.create(world);
         if (companion == null) return ActionResult.FAIL;
         companion.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, player.getYaw(), 0);
         companion.setProfile(profile);

@@ -59,7 +59,7 @@ public final class CompanionCommands {
     }
     private static int summon(ServerCommandSource source, CompanionProfile profile) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayerOrThrow();
-        CompanionEntity companion = ModRegistry.COMPANION.create(player.getWorld(), SpawnReason.COMMAND);
+        CompanionEntity companion = ModRegistry.COMPANION.create(player.getWorld());
         if (companion == null) return 0;
         companion.refreshPositionAndAngles(player.getX() + 1, player.getY(), player.getZ(), player.getYaw(), 0);
         companion.setProfile(profile); companion.setOwner(player.getUuid());

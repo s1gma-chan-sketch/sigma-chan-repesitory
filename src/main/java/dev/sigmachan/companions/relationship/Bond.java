@@ -55,7 +55,7 @@ public final class Bond {
         return day != lastGiftDay || giftsToday < 3;
     }
     public void recordGift(long day) {
-        if (!canGift(day)) throw IllegalStateException("Daily gift limit reached");
+        if (!canGift(day)) throw new IllegalStateException("Daily gift limit reached");
         if (day != lastGiftDay) { lastGiftDay = day; giftsToday = 0; }
         giftsToday++;
     }

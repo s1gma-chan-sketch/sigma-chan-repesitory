@@ -23,12 +23,16 @@ proc = subprocess.Popen(
     text=True, bufsize=1
 )
 lines = []
+log_file = (RUN / 'smoke.log').open('w', encoding='utf-8')
 def read():
     for line in proc.stdout:
         lines.append(line)
+        log_file.write(line)
+        log_file.flush()
         print(line, end='', flush=True)
+    log_file.close()
 threading.Thread(target=read, daemon=True).start()
-deadline = time.monotonic() + 360
+deadline = time.monotonic() + 150
 stage = 0
 try:
     while time.monotonic() < deadline:
@@ -66,7 +70,10 @@ try:
     if proc.returncode != 0:
         raise RuntimeError(f'Server exit code: {proc.returncode}')
     print('PASS: Fabric 1.21.1 startup, companion spawn, profile NBT readback, clean shutdown.')
-except BaseException:
+except BaseException as error:
+    print(f'::error::Smoke failed at stage {stage}: {error}', flush=True)
+    for line in lines[-70:]:
+        print('::error::' + line.rstrip().replace('%', '%25'), flush=True)
     proc.terminate()
     try:
         proc.wait(timeout=15)

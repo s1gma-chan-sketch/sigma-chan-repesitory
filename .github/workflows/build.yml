@@ -18,7 +18,28 @@ jobs:
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
       - name: Unit tests and production JAR
-        run: ./gradlew build --no-daemon --stacktrace
+        run: |
+          set +e
+          ./gradlew build --no-daemon --stacktrace > build-ci.log 2>&1
+          result=$?
+          tail -100 build-ci.log
+          if [ "$result" -ne 0 ]; then
+            python3 - <<'PY'
+            from pathlib import Path
+            lines = [line for line in Path('build-ci.log').read_text().splitlines() if 'error:' in line or 'FAILED' in line or 'Caused by:' in line or 'Could not' in line]
+            for line in lines[:35]:
+                print('::error::' + line.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A'))
+            PY
+          fi
+          exit "$result"
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-diagnostics
+          path: |
+            build-ci.log
+            build/reports/tests/test/
       - name: Inspect resources
         run: python3 tools/validate_resources.py
       - uses: actions/upload-artifact@v4

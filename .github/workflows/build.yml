@@ -52,6 +52,13 @@ jobs:
           path: |
             run/smoke.log
             run/logs/latest.log
+      - name: Publish readable smoke diagnostics
+        if: failure() && hashFiles('run/smoke.log') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 run/smoke.log)" --jq .sha)
+          echo "::notice::SMOKE_LOG_BLOB=${blob}"
       - name: Attach JAR to draft release
         env:
           GH_TOKEN: ${{ github.token }}

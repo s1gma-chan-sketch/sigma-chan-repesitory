@@ -31,7 +31,8 @@ def read():
         log_file.flush()
         print(line, end='', flush=True)
     log_file.close()
-threading.Thread(target=read, daemon=True).start()
+reader_thread = threading.Thread(target=read, daemon=True)
+reader_thread.start()
 deadline = time.monotonic() + 150
 stage = 0
 next_command_at = 0.0
@@ -60,7 +61,7 @@ try:
     if stage != 3:
         raise RuntimeError(f'Server smoke did not reach clean shutdown; stage={stage}')
     proc.wait(timeout=90)
-    thread.join(timeout=5)
+    reader_thread.join(timeout=5)
     log = ''.join(lines)
     for marker in ['Loading Minecraft 1.21.1', 'Sigma Companions initialized',
                    'has the following entity data: "mio"', 'Stopping server']:

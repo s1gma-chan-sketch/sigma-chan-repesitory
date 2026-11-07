@@ -28,17 +28,17 @@ public class CompanionModel extends EntityModel<CompanionEntity> {
         ModelData data = new ModelData();
         ModelPartData root = data.getRoot();
         ModelPartData head = root.addChild("head", new ModelPartBuilder().uv(0, 0).cuboid(-4, -8, -4, 8, 8, 8), ModelTransform.NONE);
-        head.addChild("hair_cap", cube(64, 0, -4.5f, -8.6f, -4.5f, 9, 4, 9));
-        head.addChild("fringe", cube(104, 0, -4.2f, -7.6f, -4.65f, 8, 3, 1));
-        head.addChild("hair_back", cube(0, 64, -4.5f, -5, 3.4f, 9, 13, 3));
-        head.addChild("hair_left", cube(32, 64, 3.6f, -5, -3, 2, 10, 5));
-        head.addChild("hair_right", cube(56, 64, -5.6f, -5, -3, 2, 10, 5));
-        head.addChild("ribbon", cube(104, 8, -6.4f, -6, 1, 2, 3, 3));
-        root.addChild("torso", cube(0, 16, -4, 0, -2.5f, 8, 11, 5));
-        root.addChild("left_arm", cube(32, 16, -1, -1, -2, 3, 11, 4), ModelTransform.pivot(5, 1, 0));
-        root.addChild("right_arm", cube(48, 16, -2, -1, -2, 3, 11, 4), ModelTransform.pivot(-5, 1, 0));
-        root.addChild("left_leg", cube(64, 32, -2, 0, -2, 4, 13, 4), ModelTransform.pivot(2, 11, 0));
-        root.addChild("right_leg", cube(80, 32, -2, 0, -2, 4, 13, 4), ModelTransform.pivot(-2, 11, 0));
+        head.addChild("hair_cap", cube(64, 0, -4.5f, -8.6f, -4.5f, 9, 4, 9), ModelTransform.NONE);
+        head.addChild("fringe", cube(104, 0, -4.2f, -7.6f, -4.65f, 8, 3, 1), ModelTransform.NONE);
+        head.addChild("hair_back", cube(0, 64, -4.5f, -5, 3.4f, 9, 13, 3), ModelTransform.NONE);
+        head.addChild("hair_left", cube(32, 64, 3.6f, -5, -3, 2, 10, 5), ModelTransform.NONE);
+        head.addChild("hair_right", cube(56, 64, -5.6f, -5, -3, 2, 10, 5), ModelTransform.NONE);
+        head.addChild("ribbon", cube(104, 8, -6.4f, -6, 1, 2, 3, 3), ModelTransform.NONE);
+        root.addChild("torso", cube(0, 16, -4, 0, -2.5f, 8, 11, 5), ModelTransform.NONE);
+        root.addChild("left_arm", cube(32, 16, -1, -1, -2, 3, 11, 4), ModelTransform.pivot(5, 1, 0), ModelTransform.NONE);
+        root.addChild("right_arm", cube(48, 16, -2, -1, -2, 3, 11, 4), ModelTransform.pivot(-5, 1, 0), ModelTransform.NONE);
+        root.addChild("left_leg", cube(64, 32, -2, 0, -2, 4, 13, 4), ModelTransform.pivot(2, 11, 0), ModelTransform.NONE);
+        root.addChild("right_leg", cube(80, 32, -2, 0, -2, 4, 13, 4), ModelTransform.pivot(-2, 11, 0), ModelTransform.NONE);
         return TexturedModelData.of(data, 128, 128);
     }
     private static ModelPartBuilder cube(int u, int v, float x, float y, float z, int w, int h, int d) {

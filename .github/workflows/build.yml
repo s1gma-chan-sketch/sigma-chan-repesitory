@@ -43,9 +43,11 @@ jobs:
             build-ci.log
             build/reports/tests/test/
       - name: Inspect production JAR
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          ls -l build/libs
           jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
           blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
           echo "::notice::INSPECT_JAR_BLOB=${blob}"

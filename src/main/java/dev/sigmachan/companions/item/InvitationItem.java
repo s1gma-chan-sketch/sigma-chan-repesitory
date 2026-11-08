@@ -25,7 +25,7 @@ public class InvitationItem extends Item {
     @Override public ActionResult useOnBlock(ItemUsageContext context) {
         if (!(context.getPlayer() instanceof ServerPlayerEntity player) || !(context.getWorld() instanceof ServerWorld world)) return ActionResult.SUCCESS;
         BlockPos pos = context.getBlockPos().offset(context.getSide());
-        Box box = new Box(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1.7, pos.getZ() + 1);
+        Box box = new Box(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 2.1, pos.getZ() + 1);
         if (!world.isSpaceEmpty(box) || !world.getBlockState(pos.down()).isSolidBlock(world, pos.down())) {
             player.sendMessage(Text.literal("Нужны твёрдый блок и два свободных блока над ним."), true);
             return ActionResult.FAIL;

@@ -10,6 +10,16 @@ public final class LocalDialogue {
     public static String reply(CompanionProfile profile, Bond bond, String message, DialogueContext context) {
         String clean = message.replaceAll("[\\p{Cntrl}]", "").trim();
         String text = DialogueIntent.normalize(clean);
+        var math = SafeMath.fromQuery(clean);
+        if (math.isPresent()) {
+            String answer = "Это " + math.getAsLong() + ".";
+            String reply = switch (profile) {
+                case KONATA -> "Считаю как опыт в RPG: " + answer;
+                case KAGAMI -> answer + " Проверь порядок действий, если пример был сложнее.";
+                case TSUKASA -> "Кажется, получается " + math.getAsLong() + ". Надеюсь, не ошиблась!";
+            };
+            bond.setTopic(DialogueIntent.MATH.name()); bond.rememberReply(reply); return reply;
+        }
         if (text.startsWith("запомни ")) {
             String memory = clean.replaceFirst("(?iu)^запомни\\s+", "");
             bond.remember(memory);
@@ -21,6 +31,13 @@ public final class LocalDialogue {
         }
         DialogueIntent intent = DialogueIntent.detect(text, bond.lastTopic());
         bond.setTopic(intent.name());
+        if (intent == DialogueIntent.CRAFTING || text.contains("рецепт") || text.contains("как сделать")) {
+            var recipe = KnowledgeBase.find(text);
+            if (recipe.isPresent()) {
+                String reply = voice(profile, KnowledgeBase.craftReply(recipe.get()));
+                bond.rememberReply(reply); return reply;
+            }
+        }
         String reply = switch (intent) {
             case MEMORY -> bond.memories().isEmpty()
                     ? "Пока у нас мало общих воспоминаний. Напиши «запомни …», и я сохраню это."
@@ -28,7 +45,9 @@ public final class LocalDialogue {
             case BOUNDARY -> "Давай останемся друзьями. Я фан-адаптация школьного персонажа, поэтому романтика и откровенные темы здесь недоступны.";
             case WORLD -> worldReply(profile, context);
             case NEEDS -> context.needs().isBlank() ? variants(profile, intent)[0] : context.needs() + ". " + variants(profile, intent)[1];
-            case HELP -> "ПКМ или G открывает меню, Shift+ПКМ переключает следовать/ждать. Еду можно передать кнопкой «Угостить», а подарки дарятся из руки.";
+            case HELP -> "ПКМ или G открывает меню, Shift+ПКМ переключает следовать/ждать. Можно написать «иди за мной», «подожди» или «гуляй». Еду передают кнопкой «Угостить», подарки дарят из руки.";
+            case PLAN, SURVIVAL -> voice(profile, KnowledgeBase.plan(context));
+            case MINING, COMBAT, FARMING, BUILDING -> voice(profile, KnowledgeBase.topic(intent, context));
             case IDENTITY -> profile.introduction() + " Это фан-адаптация для Minecraft, не официальный персонаж игры.";
             case FEELINGS -> feelingsReply(profile, bond, text, context);
             default -> choose(profile, bond, intent, context.turn());
@@ -39,6 +58,14 @@ public final class LocalDialogue {
         }
         bond.rememberReply(reply);
         return reply;
+    }
+
+    private static String voice(CompanionProfile profile, String fact) {
+        return switch (profile) {
+            case KONATA -> "Так, по квесту: " + fact;
+            case KAGAMI -> fact;
+            case TSUKASA -> "Давай спокойно: " + fact;
+        };
     }
 
     private static String feelingsReply(CompanionProfile profile, Bond bond, String text, DialogueContext context) {

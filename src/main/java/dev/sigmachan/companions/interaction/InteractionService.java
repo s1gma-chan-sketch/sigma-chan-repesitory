@@ -48,6 +48,20 @@ public final class InteractionService {
             case TALK -> {
                 String clean = message.replaceAll("[\\p{Cntrl}]", "").trim();
                 if (clean.isEmpty() || clean.length() > 240) return;
+                var localCommand = dev.sigmachan.companions.dialogue.LocalCommands.parse(clean);
+                if (localCommand.isPresent()) {
+                    Interaction command = localCommand.get();
+                    if (!companion.isOwner(player.getUuid())) { open(player, companion, "Режимы меняет только пригласивший игрок."); return; }
+                    if (bond.trust() < command.minimumTrust()) { open(player, companion, "Нужно доверие " + command.minimumTrust() + "/100."); return; }
+                    switch (command) {
+                        case FOLLOW -> { companion.setMode(CompanionEntity.Mode.FOLLOW); notice = "Иду за тобой."; }
+                        case STAY -> { companion.setMode(CompanionEntity.Mode.STAY); notice = "Подожду здесь."; }
+                        case WANDER -> { companion.setMode(CompanionEntity.Mode.WANDER); notice = "Погуляю рядом."; }
+                        case HOME -> { companion.setHome(player.getBlockPos()); notice = "Дом отмечен: " + player.getBlockPos().toShortString(); }
+                        default -> {}
+                    }
+                    open(player, companion, notice); return;
+                }
                 if (bond.addTrust(1)) notice = "Доверие +1";
                 SigmaCompanions.ai().talk(player, companion, clean);
             }

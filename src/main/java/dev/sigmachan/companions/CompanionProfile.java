@@ -34,7 +34,7 @@ public enum CompanionProfile {
     public String introduction() { return introduction; }
     public Item favoriteGift() { return Registries.ITEM.get(Identifier.of(favoriteGiftId)); }
     public String ambient(int index) { return ambient[Math.floorMod(index, ambient.length)]; }
-    public float scale() { return this == KAGAMI ? 1.03f : this == TSUKASA ? 0.98f : 0.96f; }
+    public float scale() { return 1.0f; } // Exact player-height rig; identity comes from hair, face and clothing, not chibi scaling.
     public boolean likes(Item item) {
         String id = Registries.ITEM.getId(item).toString();
         return id.equals(favoriteGiftId) || id.equals("minecraft:cake") || id.equals("minecraft:sweet_berries") || id.equals("sigma_companions:chocolate_cornet");

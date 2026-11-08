@@ -3,7 +3,7 @@
   "id": "sigma_companions",
   "version": "${version}",
   "name": "Sigma Companions",
-  "description": "Lucky Star fan companions: distinct models, friendship gestures, abstract needs and optional OpenAI/Anthropic dialogue. Minecraft 1.21.1 Fabric.",
+  "description": "Lucky Star fan companions on player-proportioned rigs, contextual offline dialogue, friendship gestures and optional OpenAI/Anthropic. Minecraft 1.21.1 Fabric.",
   "authors": ["s1gma-chan-sketch"],
   "license": "MIT",
   "icon": "assets/sigma_companions/icon.png",

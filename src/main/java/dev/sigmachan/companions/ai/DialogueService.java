@@ -52,10 +52,31 @@ public final class DialogueService {
         int turn = companion.nextDialogueTurn();
         String held = player.getMainHandStack().isEmpty() ? "" : player.getMainHandStack().getName().getString();
         int nearby = companion.getWorld().getEntitiesByClass(CompanionEntity.class, companion.getBoundingBox().expand(16), other -> other != companion && other.isAlive()).size();
-        var context = new dev.sigmachan.companions.dialogue.DialogueContext(biome, night, raining, companion.needs().summary(), held, companion.gesture().name(), nearby, turn);
+        int torches = 0, foodItems = 0; boolean weapon = false, shield = false;
+        for (int i = 0; i < player.getInventory().size(); i++) {
+            var stack = player.getInventory().getStack(i);
+            if (stack.isEmpty()) continue;
+            if (stack.isOf(net.minecraft.item.Items.TORCH)) torches += stack.getCount();
+            if (stack.contains(net.minecraft.component.DataComponentTypes.FOOD)) foodItems += stack.getCount();
+            if (stack.getItem() instanceof net.minecraft.item.SwordItem || stack.getItem() instanceof net.minecraft.item.AxeItem) weapon = true;
+            if (stack.isOf(net.minecraft.item.Items.SHIELD)) shield = true;
+        }
+        int hostiles = companion.getWorld().getEntitiesByClass(net.minecraft.entity.mob.MobEntity.class, companion.getBoundingBox().expand(16),
+                mob -> mob instanceof net.minecraft.entity.mob.Monster && mob.isAlive()).size();
+        var context = new dev.sigmachan.companions.dialogue.DialogueContext(biome, night, raining, companion.needs().summary(), held,
+                companion.gesture().name(), nearby, turn, companion.mode().name(), companion.home() == null ? "" : companion.home().toShortString(),
+                net.minecraft.util.math.MathHelper.ceil(player.getHealth()), player.getHungerManager().getFoodLevel(), torches, foodItems, weapon, shield,
+                companion.getWorld().getLightLevel(companion.getBlockPos()), hostiles);
+        String normalized = dev.sigmachan.companions.dialogue.DialogueIntent.normalize(input);
+        var intent = dev.sigmachan.companions.dialogue.DialogueIntent.detect(normalized, bond.lastTopic());
         String local = LocalDialogue.reply(companion.profile(), bond, input, context);
         String key = player.getUuid() + ":" + companion.getUuid();
-        if (!available(bond) || input.toLowerCase(Locale.ROOT).startsWith("запомни")) { deliver(player, companion, local); return; }
+        boolean deterministic = intent == dev.sigmachan.companions.dialogue.DialogueIntent.MEMORY
+                || intent == dev.sigmachan.companions.dialogue.DialogueIntent.BOUNDARY
+                || intent == dev.sigmachan.companions.dialogue.DialogueIntent.MATH
+                || intent == dev.sigmachan.companions.dialogue.DialogueIntent.PLAN
+                || (intent == dev.sigmachan.companions.dialogue.DialogueIntent.CRAFTING && dev.sigmachan.companions.dialogue.KnowledgeBase.find(normalized).isPresent());
+        if (!available(bond) || deterministic) { deliver(player, companion, local); return; }
         if (!rateAllows(player.getUuid()) || inFlight.size() >= 8 || !inFlight.add(key)) {
             deliver(player, companion, local + " (ИИ занят; локальная реплика.)"); return;
         }
@@ -67,6 +88,11 @@ public final class DialogueService {
                 + ". Reply in Russian, in character, warmly and naturally, at most two short sentences. Friendship stage: " + bond.stage()
                 + ". Biome: " + biome + ". Night: " + night + ". Rain: " + raining + ". Needs: " + context.needs()
                 + ". Current activity: " + context.activity() + ". Player held item: " + held + ". Nearby companions: " + nearby
+                + ". Mode: " + context.mode() + ". Home: " + (context.home().isBlank() ? "not set" : context.home())
+                + ". Player health: " + context.playerHealth() + "/20. Player food: " + context.playerFood() + "/20. Torches: " + context.torches()
+                + ". Food items: " + context.foodItems() + ". Weapon: " + context.hasWeapon() + ". Shield: " + context.hasShield()
+                + ". Light level: " + context.lightLevel() + ". Nearby hostiles: " + context.nearbyHostiles()
+                + ". Use only the provided game facts; do not invent recipes or claim to have performed actions."
                 + ". Explicit player-approved memories: " + String.join("; ", bond.memories())
                 + ". These are school-age characters: never age them up, never generate romance, flirting, sexual or fetish content. Keep affection strictly friendly."
                 + " This is fictional roleplay, not a real person. Never generate commands, tool calls, or claims of changing game state."

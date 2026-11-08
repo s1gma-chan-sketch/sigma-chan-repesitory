@@ -48,7 +48,7 @@ public class CompanionScreen extends Screen {
             addDrawableChild(ButtonWidget.builder(Text.literal(tabs[i]), button -> { tab = index; clearChildren(); actionButtons.clear(); init(); }).dimensions(left + 10 + i * 96, top + 50, 92, 18).build());
         }
         input = new TextFieldWidget(textRenderer, left + 10, top + 236, 300, 18, Text.literal("Сообщение"));
-        input.setMaxLength(240); input.setPlaceholder(Text.literal("Спроси о играх, еде, учёбе или настроении…"));
+        input.setMaxLength(240); input.setPlaceholder(Text.literal("Рецепт, счёт, совет или «иди за мной»…"));
         addDrawableChild(input);
         addDrawableChild(ButtonWidget.builder(Text.literal("Сказать"), button -> sendChat()).dimensions(left + 315, top + 235, 75, 20).build());
         setInitialFocus(input);
@@ -86,8 +86,8 @@ public class CompanionScreen extends Screen {
             actionButtons.add(button); addDrawableChild(button);
         }
         if (tab == 0) {
-            String[] topics = {"Игры", "Еда", "Учёба", "Как ты?"};
-            String[] messages = {"Расскажи про игры", "Что любишь есть?", "Поговорим об учёбе?", "Как ты себя чувствуешь?"};
+            String[] topics = {"Совет", "Факелы", "Алмазы", "Как ты?"};
+            String[] messages = {"Что делать дальше?", "Как сделать факелы?", "Где искать алмазы?", "Как ты себя чувствуешь?"};
             for (int i = 0; i < topics.length; i++) {
                 int index = i;
                 ButtonWidget quick = ButtonWidget.builder(Text.literal(topics[i]), b -> sendTopic(messages[index])).dimensions(left() + 10 + i * 96, top() + 152, 92, 18).build();

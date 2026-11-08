@@ -61,6 +61,20 @@ class LocalDialogueTest {
         LocalDialogue.reply(CompanionProfile.KONATA, bond, "  ЗАПОМНИ    я люблю сады  ", ctx());
         assertEquals("я люблю сады", bond.memories().get(0));
     }
+    @Test void craftingQuestionReturnsDeterministicRecipe() {
+        String reply = LocalDialogue.reply(CompanionProfile.KAGAMI, new Bond(), "как сделать факелы?", ctx());
+        assertTrue(reply.contains("уголь")); assertTrue(reply.contains("палк")); assertTrue(reply.contains("4"));
+    }
+    @Test void mathQuestionIsAnsweredLocally() {
+        String reply = LocalDialogue.reply(CompanionProfile.KONATA, new Bond(), "сколько будет 6 * 7?", ctx());
+        assertTrue(reply.contains("42"));
+    }
+    @Test void whatNextUsesAdventureContext() {
+        var context = new DialogueContext("plains", true, false, "", "", "NONE", 0, 1,
+                "FOLLOW", "", 20, 4, 0, 0, false, false, 12, 0);
+        String reply = LocalDialogue.reply(CompanionProfile.TSUKASA, new Bond(), "что делать дальше?", context);
+        assertTrue(reply.contains("сытости") || reply.contains("еды"));
+    }
     @Test void antiRepeatAvoidsImmediateDuplicateWhenVariantsExist() {
         Bond bond = new Bond();
         String first = LocalDialogue.reply(CompanionProfile.KONATA, bond, "какие у тебя хобби?", ctx());

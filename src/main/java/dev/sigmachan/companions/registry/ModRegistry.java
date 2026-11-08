@@ -22,7 +22,7 @@ public final class ModRegistry {
     public static final Identifier COMPANION_ID = id("companion");
     public static final EntityType<CompanionEntity> COMPANION = Registry.register(Registries.ENTITY_TYPE, COMPANION_ID,
             EntityType.Builder.<CompanionEntity>create(CompanionEntity::new, SpawnGroup.MISC)
-                    .dimensions(0.6f, 1.65f).eyeHeight(1.4f).maxTrackingRange(8).trackingTickInterval(2).build(COMPANION_ID.toString()));
+                    .dimensions(0.6f, 2.0f).eyeHeight(1.7f).maxTrackingRange(8).trackingTickInterval(2).build(COMPANION_ID.toString()));
     public static final Item CHOCOLATE_CORNET = Registry.register(Registries.ITEM, id("chocolate_cornet"),
             new Item(new Item.Settings().maxCount(16).food(FoodComponents.COOKIE)));
     public static final Map<CompanionProfile, InvitationItem> INVITATIONS = new LinkedHashMap<>();

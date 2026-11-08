@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / 'src/client/java/dev/sigmachan/companions/client/CompanionModelData.java'
 SPEC = json.loads((ROOT / 'tools/model_specs.json').read_text())
+COMMON_NAMES = {p['name'] for p in SPEC['common']}
 
 
 def f(value):
@@ -28,18 +29,20 @@ def generate():
              '        buildCommon(root, parts);']
     for name in SPEC['profiles']:
         lines += [f'        build{name.capitalize()}(parts, "{name}_");']
-    lines += ['        return TexturedModelData.of(data, 256, 256);', '    }']
+    lines += ['        return TexturedModelData.of(data, 128, 128);', '    }']
     groups = [('Common', SPEC['common'])] + [(name.capitalize(), parts) for name, parts in SPEC['profiles'].items()]
     for name, parts in groups:
         lines += [f'    private static void build{name}({"ModelPartData root, " if name == "Common" else ""}Map<String, ModelPartData> parts{", String prefix" if name != "Common" else ""}) {{']
         for part in parts:
             key = part['name'] if name == 'Common' else part['name']
-            parent = 'root' if part['parent'] is None else f'parts.get("{part["parent"]}")'
+            parent = 'root' if part['parent'] is None else (f'parts.get("{part["parent"]}")' if part['parent'] in COMMON_NAMES else f'parts.get(prefix + "{part["parent"]}")')
             put_key = f'"{key}"' if name == 'Common' else f'prefix + "{key}"'
             child_name = f'"{key}"' if name == 'Common' else f'prefix + "{key}"'
             u, v = part['uv']; w, h, d = part['size']
+            dilation = part.get('dilation', 0)
+            cuboid = f'new ModelPartBuilder().uv({u}, {v}).cuboid({vec(part["offset"])}, {w}, {h}, {d}' + (f', new Dilation({f(dilation)})' if dilation else '') + ')'
             lines += [f'        parts.put({put_key}, {parent}.addChild({child_name}, '
-                      f'new ModelPartBuilder().uv({u}, {v}).cuboid({vec(part["offset"])}, {w}, {h}, {d}), '
+                      f'{cuboid}, '
                       f'ModelTransform.pivot({vec(part["pivot"])})));']
         lines += ['    }']
     lines += ['    public static Map<String, ModelPart> bind(ModelPart root) {',
@@ -52,7 +55,8 @@ def generate():
             key = part['name'] if group_name == 'common' else group_name + '_' + part['name']
             if key in seen: continue
             seen.add(key)
-            lines += [f'        parents.put("{key}", {json.dumps(part["parent"])});']
+            resolved_parent = None if part['parent'] is None else (part['parent'] if part['parent'] in COMMON_NAMES else group_name + '_' + part['parent'])
+            lines += [f'        parents.put("{key}", {json.dumps(resolved_parent)});']
     lines += ['        for (var entry : parents.entrySet()) {',
               '            ModelPart part = root;', '            String parent = entry.getValue();',
               '            if (parent != null) part = parts.get(parent);',

@@ -109,6 +109,7 @@ jobs:
           echo "VERIFIED_JAR_BLOB=${blob}" >> "$GITHUB_STEP_SUMMARY"
           echo "SHA256=${hash}" >> "$GITHUB_STEP_SUMMARY"
           tag="build-${GITHUB_RUN_ID}"
+          mod_version=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
           notes="Fabric 1.21.1 alpha: Lucky Star fan companions, friendship-only gestures, abstract needs. Unit tests and dedicated-server smoke test passed. Download the JAR below, not the source archives. Draft prerelease: not a stable release. VERIFIED_JAR_BLOB=${blob} SHA256=${hash}"
           gh release delete "$tag" --yes >/dev/null 2>&1 || true
-          gh release create "$tag" "$jar" --target "$GITHUB_SHA" --title "Sigma Companions 0.2.0 — verified alpha build" --notes "$notes" --draft --prerelease
+          gh release create "$tag" "$jar" --target "$GITHUB_SHA" --title "Sigma Companions ${mod_version} — verified alpha build" --notes "$notes" --draft --prerelease

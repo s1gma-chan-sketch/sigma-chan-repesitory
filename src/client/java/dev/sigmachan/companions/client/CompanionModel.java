@@ -70,13 +70,14 @@ public class CompanionModel extends EntityModel<CompanionEntity> {
                 case COMFORT -> { rightArm.pitch = -1.75f * env; rightArm.yaw = -0.2f * env; head.roll = -0.1f * env; torso.pitch = -0.05f * env; }
                 case EAT -> { snack.visible = true; rightArm.pitch = (-1.45f + MathHelper.sin(progress * MathHelper.PI * 6) * 0.16f) * env; head.pitch += 0.1f * env; }
                 case DRINK -> { cup.visible = true; rightArm.pitch = (-1.8f + MathHelper.sin(progress * MathHelper.PI * 4) * 0.1f) * env; head.pitch -= 0.12f * env; }
-                case REST -> { sit = 1; head.pitch += 0.06f; leftArm.pitch = -0.35f; rightArm.pitch = -0.35f; }
+                case REST -> { sit = Math.min(1, Math.min(progress * 5, (1 - progress) * 5)); head.pitch += 0.06f * sit; leftArm.pitch = -0.35f * sit; rightArm.pitch = -0.35f * sit; }
                 default -> {}
             }
         }
         if (sit > 0) {
             leftLeg.pitch = -1.35f * sit; rightLeg.pitch = -1.35f * sit;
             head.pivotY += 6 * sit; torso.pivotY += 6 * sit; leftArm.pivotY += 6 * sit; rightArm.pivotY += 6 * sit;
+            leftLeg.pivotY += 6 * sit; rightLeg.pivotY += 6 * sit;
             if (gesture != Gesture.REST) { leftArm.pitch = -0.3f * sit; rightArm.pitch = -0.3f * sit; }
         }
     }

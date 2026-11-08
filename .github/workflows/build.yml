@@ -43,11 +43,9 @@ jobs:
             build-ci.log
             build/reports/tests/test/
       - name: Inspect production JAR
-        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ls -l build/libs
           jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
           blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
           echo "::notice::INSPECT_JAR_BLOB=${blob}"
@@ -94,9 +92,20 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
-          tag="build-${GITHUB_RUN_ID}"
-          gh release create "$tag" "$jar" --target "$GITHUB_SHA" --title "Sigma Companions 0.2.0 — verified alpha build" --notes "Fabric 1.21.1 alpha: Lucky Star fan companions, friendship-only gestures, abstract needs. Unit tests and dedicated-server smoke test passed. Download the JAR below, not the source archives. Draft prerelease: not a stable release." --draft
-          sha256sum "$jar"
-          blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
-          echo "::notice::VERIFIED_JAR_BLOB=${blob}"
+          set +e
+          {
+            jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
+            sha256sum "$jar"
+            blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
+            echo "::notice::VERIFIED_JAR_BLOB=${blob}"
+            echo "VERIFIED_JAR_BLOB=${blob}" >> "$GITHUB_STEP_SUMMARY"
+            tag="build-${GITHUB_RUN_ID}"
+            gh release create "$tag" "$jar" --target "$GITHUB_SHA" --title "Sigma Companions 0.2.0 — verified alpha build" --notes "Fabric 1.21.1 alpha: Lucky Star fan companions, friendship-only gestures, abstract needs. Unit tests and dedicated-server smoke test passed. Download the JAR below, not the source archives. Draft prerelease: not a stable release." --draft
+          } > attach.log 2>&1
+          code=$?
+          cat attach.log
+          if [ "$code" -ne 0 ]; then
+            logblob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 attach.log)" --jq .sha)
+            echo "::error::ATTACH_LOG_BLOB=${logblob}"
+            exit "$code"
+          fi

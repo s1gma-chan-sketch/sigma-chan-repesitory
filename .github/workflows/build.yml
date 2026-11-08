@@ -43,7 +43,12 @@ jobs:
             build-ci.log
             build/reports/tests/test/
       - name: Inspect production JAR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
+          blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
+          echo "::notice::INSPECT_JAR_BLOB=${blob}"
           python3 - <<'PY'
           import hashlib, pathlib, zipfile
           jars = [p for p in pathlib.Path('build/libs').glob('*.jar') if not p.name.endswith('-sources.jar')]

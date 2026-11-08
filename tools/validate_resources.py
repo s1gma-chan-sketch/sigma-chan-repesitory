@@ -17,7 +17,7 @@ assert meta['id'] == 'sigma_companions'
 assert meta['depends']['minecraft'] == '~1.21.1'
 assert any(m['config'] == 'sigma_companions.client.mixins.json' and m['environment'] == 'client' for m in meta['mixins'])
 mixin = json.loads((CLIENT_RES / 'sigma_companions.client.mixins.json').read_text())
-assert mixin['refmap'] == 'sigma_companions.refmap.json'
+assert mixin['refmap'] == 'client-sigma_companions.refmap.json'
 assert 'HeldItemRendererMixin' in mixin['client']
 assert (ROOT / 'src/client/java/dev/sigmachan/companions/client/mixin/HeldItemRendererMixin.java').exists()
 

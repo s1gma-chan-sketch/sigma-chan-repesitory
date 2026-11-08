@@ -56,7 +56,7 @@ jobs:
           with zipfile.ZipFile(jar) as z:
               names = set(z.namelist())
               require(z.testzip() is None, 'corrupt zip entry')
-              for entry in ('fabric.mod.json', 'sigma_companions.client.mixins.json', 'sigma_companions.refmap.json', 'dev/sigmachan/companions/client/mixin/HeldItemRendererMixin.class'):
+              for entry in ('fabric.mod.json', 'sigma_companions.client.mixins.json', 'client-sigma_companions.refmap.json', 'dev/sigmachan/companions/client/mixin/HeldItemRendererMixin.class'):
                   require(entry in names, f'missing {entry}; mixin/refmap entries={[n for n in sorted(names) if "mixin" in n or "refmap" in n]}')
               require(not any(n.startswith('dev/sigmachan/companions/') and n.endswith('Test.class') for n in names), 'test classes in production jar')
           print(jar.name, jar.stat().st_size, hashlib.sha256(jar.read_bytes()).hexdigest())

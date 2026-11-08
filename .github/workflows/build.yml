@@ -27,6 +27,13 @@ jobs:
             python3 -c 'import pathlib,xml.etree.ElementTree as E; [(print("::error::"+str(f)+" "+x.attrib.get("message",""))) for f in pathlib.Path("build/test-results/test").glob("*.xml") for x in E.parse(f).iter() if x.tag in ("failure","error")]' || true
             exit 1
           fi
+      - name: Publish readable build diagnostics
+        if: failure() && hashFiles('build-ci.log') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 build-ci.log)" --jq .sha)
+          echo "::notice::BUILD_LOG_BLOB=${blob}"
       - name: Upload diagnostics
         if: failure()
         uses: actions/upload-artifact@v4

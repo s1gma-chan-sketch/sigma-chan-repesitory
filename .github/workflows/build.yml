@@ -43,12 +43,7 @@ jobs:
             build-ci.log
             build/reports/tests/test/
       - name: Inspect production JAR
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
-          blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
-          echo "::notice::INSPECT_JAR_BLOB=${blob}"
           python3 - <<'PY'
           import hashlib, pathlib, zipfile
           jars = [p for p in pathlib.Path('build/libs').glob('*.jar') if not p.name.endswith('-sources.jar')]
@@ -96,7 +91,7 @@ jobs:
           {
             jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
             sha256sum "$jar"
-            blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
+            blob=$(curl -fsS -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs" -d "{\"content\":\"$(base64 -w0 "$jar")\",\"encoding\":\"base64\"}" | jq -r .sha)
             echo "::notice::VERIFIED_JAR_BLOB=${blob}"
             echo "VERIFIED_JAR_BLOB=${blob}" >> "$GITHUB_STEP_SUMMARY"
             tag="build-${GITHUB_RUN_ID}"
@@ -105,7 +100,7 @@ jobs:
           code=$?
           cat attach.log
           if [ "$code" -ne 0 ]; then
-            logblob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 attach.log)" --jq .sha)
+            logblob=$(curl -fsS -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs" -d "{\"content\":\"$(base64 -w0 attach.log)\",\"encoding\":\"base64\"}" | jq -r .sha)
             echo "::error::ATTACH_LOG_BLOB=${logblob}"
             exit "$code"
           fi

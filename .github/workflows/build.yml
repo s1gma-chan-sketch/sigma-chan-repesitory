@@ -46,17 +46,19 @@ jobs:
         run: |
           python3 - <<'PY'
           import hashlib, pathlib, zipfile
+          def require(condition, message):
+              if not condition:
+                  print('::error::JAR inspection: ' + message)
+                  raise SystemExit(1)
           jars = [p for p in pathlib.Path('build/libs').glob('*.jar') if not p.name.endswith('-sources.jar')]
-          assert len(jars) == 1, jars
+          require(len(jars) == 1, f'expected one production jar, got {jars}')
           jar = jars[0]
           with zipfile.ZipFile(jar) as z:
               names = set(z.namelist())
-              assert z.testzip() is None
-              assert 'fabric.mod.json' in names
-              assert 'sigma_companions.client.mixins.json' in names
-              assert 'sigma_companions.refmap.json' in names
-              assert 'dev/sigmachan/companions/client/mixin/HeldItemRendererMixin.class' in names
-              assert not any(n.startswith('dev/sigmachan/companions/') and n.endswith('Test.class') for n in names)
+              require(z.testzip() is None, 'corrupt zip entry')
+              for entry in ('fabric.mod.json', 'sigma_companions.client.mixins.json', 'sigma_companions.refmap.json', 'dev/sigmachan/companions/client/mixin/HeldItemRendererMixin.class'):
+                  require(entry in names, f'missing {entry}; mixin/refmap entries={[n for n in sorted(names) if "mixin" in n or "refmap" in n]}')
+              require(not any(n.startswith('dev/sigmachan/companions/') and n.endswith('Test.class') for n in names), 'test classes in production jar')
           print(jar.name, jar.stat().st_size, hashlib.sha256(jar.read_bytes()).hexdigest())
           PY
       - name: Inspect resources

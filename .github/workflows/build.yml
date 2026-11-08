@@ -93,7 +93,8 @@ jobs:
           {
             jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
             sha256sum "$jar"
-            blob=$(curl -fsS -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs" -d "{\"content\":\"$(base64 -w0 "$jar")\",\"encoding\":\"base64\"}" | jq -r .sha)
+            blob=$(curl -fsS -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs" -d "{\"content\":\"$(base64 -w0 "$jar")\",\"encoding\":\"base64\"}" | jq -r .sha)
+            if ! [[ "$blob" =~ ^[0-9a-f]{40}$ ]]; then echo "Invalid JAR blob response: $blob"; exit 1; fi
             echo "::notice::VERIFIED_JAR_BLOB=${blob}"
             echo "VERIFIED_JAR_BLOB=${blob}" >> "$GITHUB_STEP_SUMMARY"
             tag="build-${GITHUB_RUN_ID}"
@@ -102,7 +103,7 @@ jobs:
           code=$?
           cat attach.log
           if [ "$code" -ne 0 ]; then
-            logblob=$(curl -fsS -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs" -d "{\"content\":\"$(base64 -w0 attach.log)\",\"encoding\":\"base64\"}" | jq -r .sha)
+            logblob=$(curl -fsS -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs" -d "{\"content\":\"$(base64 -w0 attach.log)\",\"encoding\":\"base64\"}" | jq -r .sha)
             echo "::error::ATTACH_LOG_BLOB=${logblob}"
             exit "$code"
           fi

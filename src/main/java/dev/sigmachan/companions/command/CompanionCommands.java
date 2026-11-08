@@ -65,7 +65,7 @@ public final class CompanionCommands {
         CompanionEntity companion = ModRegistry.COMPANION.create(player.getWorld());
         if (companion == null) return 0;
         companion.refreshPositionAndAngles(player.getX() + 1, player.getY(), player.getZ(), player.getYaw(), 0);
-        companion.setProfile(profile); companion.setOwner(player.getUuid());
+        companion.setProfile(profile); companion.setOwner(player.getUuid()); companion.bond(player.getUuid());
         if (!player.getWorld().isSpaceEmpty(companion.getBoundingBox())) { source.sendError(Text.literal("Рядом недостаточно места. Освободи два блока над землёй.")); return 0; }
         player.getWorld().spawnEntity(companion);
         source.sendFeedback(() -> Text.literal("Приглашена " + profile.displayName() + ". ПКМ — меню; Shift+ПКМ — следовать/ждать."), false);

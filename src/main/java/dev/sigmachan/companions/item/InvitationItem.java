@@ -38,7 +38,7 @@ public class InvitationItem extends Item {
         CompanionEntity companion = ModRegistry.COMPANION.create(world);
         if (companion == null) return ActionResult.FAIL;
         companion.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, player.getYaw(), 0);
-        companion.setProfile(profile); companion.setOwner(player.getUuid());
+        companion.setProfile(profile); companion.setOwner(player.getUuid()); companion.bond(player.getUuid());
         companion.initialize(world, world.getLocalDifficulty(pos), SpawnReason.MOB_SUMMONED, null);
         world.spawnEntity(companion);
         context.getStack().decrementUnlessCreative(1, player);

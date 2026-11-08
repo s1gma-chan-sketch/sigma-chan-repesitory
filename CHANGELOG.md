@@ -1,14 +1,38 @@
 # Changelog
 
-## 0.1.0-alpha.1 — 2026-11-07
+## v0.2.0-alpha.1
 
-First playable-source alpha for Minecraft Java 1.21.1, Fabric Loader 0.16.14+, Fabric API, Java 21.
+Переработка по отзыву на v0.1: одинаковые оригинальные персонажи заменены на узнаваемый фан-состав Lucky Star, взаимодействия стали видимыми, диалог — контекстнее.
 
-- Three original adult companions (23–26), custom cuboid models and generated pixel textures.
-- Russian interaction screen, keybind, invitations, ring and crafting recipes.
-- Per-player trust, gifts, friendly affection, explicit romance consent, dating, marriage and shared-home marker.
-- Follow/stay/wander goals, night/rain homing, monster defense, local contextual dialogue and explicit memories.
-- Optional server-side OpenAI/Anthropic dialogue with per-player consent, bounded history, rate limits and local fallback.
-- CI compilation, 18 unit tests, resource/UV checks and real dedicated-server entity spawn/NBT readback.
+### Добавлено
+- Коната Идзуми, Кагами Хиираги, Цукаса Хиираги с отдельными моделями/текстурами.
+- Разные силуэты волос, ахогэ, хвосты, ленты и бант.
+- Дружеские жесты: wave, high-five, hug, head-pat reaction, comfort.
+- Подход к игроку перед жестом и клиентская анимация руки от первого лица.
+- Абстрактные потребности: сытость, вода, бодрость; задержанный эффект перекуса; NBT-сохранение.
+- Автономное питьё рядом с водой и отдых при низкой бодрости.
+- Шоколадный корнет и рецепт.
+- Тематический локальный диалог с контекстом мира, памятью, продолжением темы и защитой от повторов.
+- Быстрые темы в меню и полоски потребностей.
+- Smoke-тест сервера для нового профиля, потребностей и миграции старого ID.
 
-This is an alpha, not a feature-complete relationship simulator or a Lucky Star adaptation. No sexual or breeding mechanics. Live paid AI requests and full interactive client playthroughs have not been validated.
+### Изменено
+- Состав приглашений и рецептов.
+- Меню: дружба, перекус, приключение, ИИ.
+- Внешний AI-промпт: только дружеское взаимодействие, без романтики/фетишей/повзросления.
+- Проверка JAR контролирует client mixin и refmap.
+
+### Удалено/отключено
+- Романтика, свидания, поцелуи, брак и размножение для состава Lucky Star.
+- Туалетные/экскреторные механики не добавлялись.
+- Старые оригинальные текстуры удалены; старые приглашения мигрируют.
+- Кольцо обещания осталось только инертным legacy-предметом без рецепта.
+
+### Известные ограничения
+- Alpha: ручная проверка GUI, анимаций в игре, мультиплеера, долгой навигации и живых AI-запросов ограничена.
+- Локальный диалог не является нейросетью.
+- Внешние OpenAI/Anthropic требуют ключей сервера, согласия игрока и могут тарифицироваться.
+
+## v0.1.0-alpha.1
+
+Первая проверяемая alpha: оригинальные взрослые персонажи, дружба/романтика по согласию, подарки, дом, опциональный OpenAI/Anthropic, CI и выделенный сервер smoke-тест. Заменена составом Lucky Star в v0.2 по отзыву пользователя.

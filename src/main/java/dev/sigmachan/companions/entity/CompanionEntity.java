@@ -135,7 +135,7 @@ public class CompanionEntity extends PathAwareEntity {
     public void playGesture(Gesture gesture) { if (!isBusy()) startGesture(gesture, null, false); }
     public boolean drinkNearbyWater() {
         if (isBusy() || findWater() == null) return false;
-        needs.drink(); playGesture(Gesture.DRINK); return true;
+        playGesture(Gesture.DRINK); return true;
     }
     private void cancelPending() { pendingGesture = Gesture.NONE; interactionTarget = null; needTarget = null; approachTicks = 0; rewardTrust = false; }
 
@@ -168,6 +168,7 @@ public class CompanionEntity extends PathAwareEntity {
     private void finishGesture(Gesture gesture) {
         dataTracker.set(GESTURE, Gesture.NONE.id()); dataTracker.set(GESTURE_TICKS, 0);
         if (gesture == Gesture.REST) needs.finishRest();
+        if (gesture == Gesture.DRINK) needs.drink();
         if (gesture == Gesture.EAT || gesture == Gesture.DRINK || gesture == Gesture.REST) {
             String line = switch (gesture) { case EAT -> profile().reaction("snack"); case DRINK -> "Спасибо, вода очень кстати."; default -> "Я немного отдохнула. Так лучше."; };
             broadcastNearby(line);

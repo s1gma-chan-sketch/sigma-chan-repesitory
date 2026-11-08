@@ -9,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class CompanionNeedsTest {
     @Test void snackEffectIsDelayedAndNotExcretory() {
         CompanionNeeds needs = new CompanionNeeds();
-        assertTrue(needs.offerSnack(24, 3));
-        assertFalse(needs.offerSnack(24, 3));
+        assertTrue(needs.offerSnack(24, 5));
+        assertFalse(needs.offerSnack(24, 5));
         int before = needs.satiety();
-        needs.tick(false); needs.tick(false);
+        needs.tick(false); needs.tick(false); needs.tick(false); needs.tick(false);
         assertTrue(needs.busyDigesting()); assertFalse(needs.consumeDigestedNotice());
         assertEquals(before - 1, needs.satiety(), 1);
         needs.tick(false);

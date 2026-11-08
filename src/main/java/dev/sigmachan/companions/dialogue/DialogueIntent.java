@@ -18,7 +18,7 @@ public enum DialogueIntent {
     public static DialogueIntent detect(String normalized, String lastTopic) {
         if (normalized.matches("^(запомни|забудь)\\b.*")) return MEMORY;
         if (containsAny(normalized, "романт", "свидан", "поцел", "брак", "свадьб", "секс", "интим", "совершеннолет", "люблю тебя")) return BOUNDARY;
-        if (normalized.matches("^(почему|зачем|а ты|расскажи еще|еще|продолжи|правда)\\b.*") && !lastTopic.isBlank()) {
+        if (!lastTopic.isBlank() && (normalized.equals("почему") || normalized.equals("зачем") || normalized.equals("а ты") || normalized.startsWith("а ты ") || normalized.startsWith("расскажи еще") || normalized.equals("еще") || normalized.startsWith("продолжи") || normalized.equals("правда"))) {
             try { return valueOf(lastTopic); } catch (IllegalArgumentException ignored) {}
         }
         Set<String> tokens = new HashSet<>(Arrays.asList(normalized.split(" ")));

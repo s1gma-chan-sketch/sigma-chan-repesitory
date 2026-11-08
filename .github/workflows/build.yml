@@ -85,32 +85,30 @@ jobs:
         run: |
           blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 run/smoke.log)" --jq .sha)
           echo "::notice::SMOKE_LOG_BLOB=${blob}"
-      - name: Attach JAR to draft release
+      - name: Transfer verified JAR and attach to draft release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          set +e
-          {
-            jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
-            sha256sum "$jar"
-            blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
-            if ! [[ "$blob" =~ ^[0-9a-f]{40}$ ]]; then echo "Invalid JAR blob response: $blob"; exit 1; fi
-            hash=$(sha256sum "$jar" | awk '{print $1}')
-            echo "::notice::VERIFIED_JAR_BLOB=${blob}"
-            echo "VERIFIED_JAR_BLOB=${blob}" >> "$GITHUB_STEP_SUMMARY"
-            tag="build-${GITHUB_RUN_ID}"
-            notes="Fabric 1.21.1 alpha: Lucky Star fan companions, friendship-only gestures, abstract needs. Unit tests and dedicated-server smoke test passed. Download the JAR below, not the source archives. Draft prerelease: not a stable release. VERIFIED_JAR_BLOB=${blob} SHA256=${hash}"
-            if gh release view "$tag" >/dev/null 2>&1; then
-              gh release edit "$tag" --notes "$notes"
-            else
-              gh release create "$tag" --target "$GITHUB_SHA" --title "Sigma Companions 0.2.0 — verified alpha build" --notes "$notes" --draft --prerelease
-            fi
-            gh release upload "$tag" "$jar" --clobber
-          } > attach.log 2>&1
-          code=$?
-          cat attach.log
-          if [ "$code" -ne 0 ]; then
-            logblob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 attach.log)" --jq .sha || true)
-            echo "::error::ATTACH_LOG_BLOB=${logblob}"
-            exit "$code"
+          set -euo pipefail
+          jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
+          test -n "$jar"
+          hash=$(sha256sum "$jar" | awk '{print $1}')
+          echo "JAR: $jar"
+          echo "SHA256: $hash"
+          base64 -w0 "$jar" > jar.b64
+          python3 - <<'PY'
+          import json, pathlib
+          pathlib.Path('blob.json').write_text(json.dumps({'content': pathlib.Path('jar.b64').read_text(), 'encoding': 'base64'}))
+          PY
+          blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST --input blob.json --jq .sha)
+          if ! [[ "$blob" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::Invalid JAR blob response: $blob"
+            exit 1
           fi
+          echo "::notice::VERIFIED_JAR_BLOB=${blob}"
+          echo "VERIFIED_JAR_BLOB=${blob}" >> "$GITHUB_STEP_SUMMARY"
+          echo "SHA256=${hash}" >> "$GITHUB_STEP_SUMMARY"
+          tag="build-${GITHUB_RUN_ID}"
+          notes="Fabric 1.21.1 alpha: Lucky Star fan companions, friendship-only gestures, abstract needs. Unit tests and dedicated-server smoke test passed. Download the JAR below, not the source archives. Draft prerelease: not a stable release. VERIFIED_JAR_BLOB=${blob} SHA256=${hash}"
+          gh release delete "$tag" --yes >/dev/null 2>&1 || true
+          gh release create "$tag" "$jar" --target "$GITHUB_SHA" --title "Sigma Companions 0.2.0 — verified alpha build" --notes "$notes" --draft --prerelease

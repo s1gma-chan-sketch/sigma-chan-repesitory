@@ -54,6 +54,7 @@ public final class InteractionService {
             case COMPLIMENT -> { bond.addTrust(2); companion.playGesture(Gesture.WAVE); notice = companion.profile().reaction("wave") + " Доверие +2"; }
             case WAVE -> { companion.playGesture(Gesture.WAVE); notice = companion.profile().reaction("wave"); }
             case GIFT -> {
+                if (companion.isBusy()) { open(player, companion, "Подожди, пока закончится текущее действие. Подарок не потрачен."); return; }
                 ItemStack stack = player.getMainHandStack();
                 if (!companion.profile().likes(stack.getItem())) { open(player, companion, "Возьми любимый подарок: " + companion.profile().favoriteGift().getName().getString() + ", торт, сладкие ягоды или шоколадный корнет."); return; }
                 long day = world.getTime() / 24000L;
@@ -82,7 +83,7 @@ public final class InteractionService {
             case DRINK -> {
                 if (companion.isBusy()) { open(player, companion, "Подожди, пока закончится текущее действие."); return; }
                 if (!companion.drinkNearbyWater()) { open(player, companion, "Нужен источник воды рядом со спутницей (до 5 блоков)."); return; }
-                notice = companion.profile().shortName() + " делает несколько глотков. Вода восстановлена.";
+                notice = companion.profile().shortName() + " делает несколько глотков. Вода восстановится через пару секунд.";
             }
             case REST -> {
                 if (companion.isBusy()) { open(player, companion, "Подожди, пока закончится текущее действие."); return; }

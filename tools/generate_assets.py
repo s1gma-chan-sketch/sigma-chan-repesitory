@@ -59,6 +59,8 @@ def face_for(name, theme):
             if name == 'konata':
                 d.line((ex, y+2, ex+1, y+2), fill=theme['dark'])
                 d.point((ex, y+3), fill=theme['dark'])
+                if ex == x+1:
+                    d.point((ex, y+6), fill=(120, 82, 92))  # small beauty mark under one eye
             elif name == 'kagami':
                 d.line((ex, y+2, ex+1, y+1 if ex == x+1 else y+2), fill=theme['dark'])
             else:

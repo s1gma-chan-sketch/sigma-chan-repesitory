@@ -17,7 +17,7 @@ public enum DialogueIntent {
     }
     public static DialogueIntent detect(String normalized, String lastTopic) {
         if (normalized.matches("^(запомни|забудь)\\b.*")) return MEMORY;
-        if (containsAny(normalized, "романт", "свидан", "поцел", "брак", "свадьб", "секс", "интим", "совершеннолет", "люблю тебя")) return BOUNDARY;
+        if (containsAny(normalized, "романт", "свидан", "поцел", "брак", "свадьб", "секс", "интим", "совершеннолет", "люблю тебя", "туалетн", "экскретор", "фекал", "мочеиспуск", "дефекац")) return BOUNDARY;
         if (!lastTopic.isBlank() && (normalized.equals("почему") || normalized.equals("зачем") || normalized.equals("а ты") || normalized.startsWith("а ты ") || normalized.startsWith("расскажи еще") || normalized.equals("еще") || normalized.startsWith("продолжи") || normalized.equals("правда"))) {
             try { return valueOf(lastTopic); } catch (IllegalArgumentException ignored) {}
         }
@@ -47,7 +47,7 @@ public enum DialogueIntent {
             case GAMES -> new String[]{"игр", "квест", "данж", "майнкрафт", "редстоун", "приключ", "пещер", "моб", "ферм", "строит", "блок", "данжен", "minecraft"};
             case STUDY -> new String[]{"учен", "школ", "домашн", "задач", "книг", "экзамен", "урок", "математик", "учеб", "истор", "библиот"};
             case HELP -> new String[]{"управлен", "кнопк", "команд", "как играть", "меню", "следов", "режим", "помощ", "подарок", "дарить", "help"};
-            case FEELINGS -> new String[]{"груст", "плохо", "одинок", "страшно", "тревог", "боюсь", "поддерж", "обн", "расстро", "скучно", "устал"};
+            case FEELINGS -> new String[]{"груст", "плохо", "одинок", "страшно", "тревог", "боюсь", "поддерж", "обн", "расстро", "скучно", "устал", "как ты", "как дела", "чувств", "настроени", "самочувств", "how are you"};
             case NEEDS -> new String[]{"сыт", "жажд", "отдых", "поспать", "энерг", "бодр", "устала", "хочу пить", "голодна"};
             case WORLD -> new String[]{"биом", "погод", "ночь", "дождь", "где мы", "время", "день", "закат", "рассвет"};
             case MEMORY -> new String[]{"помнишь", "памят", "воспомин", "что я люблю", "запомни", "забудь"};

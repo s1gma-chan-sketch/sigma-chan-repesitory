@@ -11,8 +11,9 @@ public final class LocalDialogue {
         String clean = message.replaceAll("[\\p{Cntrl}]", "").trim();
         String text = DialogueIntent.normalize(clean);
         if (text.startsWith("запомни ")) {
-            bond.remember(clean.substring(8));
-            return "Запомню: " + bond.memories().get(bond.memories().size() - 1);
+            String memory = clean.replaceFirst("(?iu)^запомни\\s+", "");
+            bond.remember(memory);
+            return bond.memories().isEmpty() ? "Напиши после «запомни» то, что стоит сохранить." : "Запомню: " + bond.memories().get(bond.memories().size() - 1);
         }
         if (text.startsWith("забудь")) {
             bond.clearMemories();
@@ -29,7 +30,7 @@ public final class LocalDialogue {
             case NEEDS -> context.needs().isBlank() ? variants(profile, intent)[0] : context.needs() + ". " + variants(profile, intent)[1];
             case HELP -> "ПКМ или G открывает меню, Shift+ПКМ переключает следовать/ждать. Еду можно передать кнопкой «Угостить», а подарки дарятся из руки.";
             case IDENTITY -> profile.introduction() + " Это фан-адаптация для Minecraft, не официальный персонаж игры.";
-            case FEELINGS -> variants(profile, intent)[0] + (context.nearbyCompanions() > 0 ? " Мы не одни, так что можно не спешить." : "");
+            case FEELINGS -> feelingsReply(profile, bond, text, context);
             default -> choose(profile, bond, intent, context.turn());
         };
         if (intent == DialogueIntent.SMALLTALK && !text.isBlank()) {
@@ -38,6 +39,20 @@ public final class LocalDialogue {
         }
         bond.rememberReply(reply);
         return reply;
+    }
+
+    private static String feelingsReply(CompanionProfile profile, Bond bond, String text, DialogueContext context) {
+        boolean askingAboutCompanion = text.contains("как ты") || text.contains("как дела") || text.contains("чувств") || text.contains("настроени") || text.contains("самочувств") || text.contains("how are you");
+        if (askingAboutCompanion && !context.needs().isBlank()) {
+            String mood = switch (profile) {
+                case KONATA -> "В целом я в порядке, готова к приключениям.";
+                case KAGAMI -> "Спасибо, что спросил. Я держусь нормально.";
+                case TSUKASA -> "Мне тепло и спокойно, когда ты рядом.";
+            };
+            return mood + " " + context.needs() + ".";
+        }
+        return choose(profile, bond, DialogueIntent.FEELINGS, context.turn())
+                + (context.nearbyCompanions() > 0 ? " Мы не одни, так что можно не спешить." : "");
     }
 
     private static String worldReply(CompanionProfile profile, DialogueContext context) {

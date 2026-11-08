@@ -18,7 +18,7 @@
       {"name":"hair_back","parent":"head","uv":[0,84],"size":[9,18,3],"offset":[-4.5,-5,3],"pivot":[0,0,0]},
       {"name":"hair_left","parent":"head","uv":[32,84],"size":[2,16,4],"offset":[3.5,-5,-2],"pivot":[0,0,0]},
       {"name":"hair_right","parent":"head","uv":[48,84],"size":[2,16,4],"offset":[-5.5,-5,-2],"pivot":[0,0,0]},
-      {"name":"ahoge","parent":"head","uv":[64,64],"size":[1,4,1],"offset":[0,-12,0],"pivot":[0,-8,0]},
+      {"name":"ahoge","parent":"head","uv":[64,64],"size":[1,4,1],"offset":[0,-4,0],"pivot":[0,-8,0]},
       {"name":"ribbon","parent":"head","uv":[72,64],"size":[3,3,2],"offset":[-6,-7,0],"pivot":[0,0,0]}
     ],
     "kagami": [

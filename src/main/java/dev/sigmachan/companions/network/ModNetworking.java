@@ -31,9 +31,9 @@ public final class ModNetworking {
         net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PACKET_WINDOW.remove(handler.player.getUuid()));
     }
     private static boolean allowed(ServerPlayerEntity player) {
-        long now = player.getWorld().getTime();
+        long now = System.nanoTime();
         long[] window = PACKET_WINDOW.computeIfAbsent(player.getUuid(), id -> new long[]{now, 0});
-        if (now - window[0] >= 20) { window[0] = now; window[1] = 0; }
+        if (now - window[0] >= 1_000_000_000L) { window[0] = now; window[1] = 0; }
         return ++window[1] <= 12;
     }
     public static void sendState(ServerPlayerEntity player, CompanionStateS2C state) {

@@ -93,17 +93,24 @@ jobs:
           {
             jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
             sha256sum "$jar"
-            blob=$(curl -fsS -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs" -d "{\"content\":\"$(base64 -w0 "$jar")\",\"encoding\":\"base64\"}" | jq -r .sha)
+            blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
             if ! [[ "$blob" =~ ^[0-9a-f]{40}$ ]]; then echo "Invalid JAR blob response: $blob"; exit 1; fi
+            hash=$(sha256sum "$jar" | awk '{print $1}')
             echo "::notice::VERIFIED_JAR_BLOB=${blob}"
             echo "VERIFIED_JAR_BLOB=${blob}" >> "$GITHUB_STEP_SUMMARY"
             tag="build-${GITHUB_RUN_ID}"
-            gh release create "$tag" "$jar" --target "$GITHUB_SHA" --title "Sigma Companions 0.2.0 — verified alpha build" --notes "Fabric 1.21.1 alpha: Lucky Star fan companions, friendship-only gestures, abstract needs. Unit tests and dedicated-server smoke test passed. Download the JAR below, not the source archives. Draft prerelease: not a stable release." --draft
+            notes="Fabric 1.21.1 alpha: Lucky Star fan companions, friendship-only gestures, abstract needs. Unit tests and dedicated-server smoke test passed. Download the JAR below, not the source archives. Draft prerelease: not a stable release. VERIFIED_JAR_BLOB=${blob} SHA256=${hash}"
+            if gh release view "$tag" >/dev/null 2>&1; then
+              gh release edit "$tag" --notes "$notes"
+            else
+              gh release create "$tag" --target "$GITHUB_SHA" --title "Sigma Companions 0.2.0 — verified alpha build" --notes "$notes" --draft --prerelease
+            fi
+            gh release upload "$tag" "$jar" --clobber
           } > attach.log 2>&1
           code=$?
           cat attach.log
           if [ "$code" -ne 0 ]; then
-            logblob=$(curl -fsS -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs" -d "{\"content\":\"$(base64 -w0 attach.log)\",\"encoding\":\"base64\"}" | jq -r .sha)
+            logblob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 attach.log)" --jq .sha || true)
             echo "::error::ATTACH_LOG_BLOB=${logblob}"
             exit "$code"
           fi

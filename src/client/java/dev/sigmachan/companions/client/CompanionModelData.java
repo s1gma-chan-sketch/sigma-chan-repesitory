@@ -34,7 +34,7 @@ public final class CompanionModelData {
         parts.put(prefix + "hair_back", parts.get("head").addChild(prefix + "hair_back", new ModelPartBuilder().uv(0, 84).cuboid(-4.5f, -5f, 3f, 9, 18, 3), ModelTransform.pivot(0f, 0f, 0f)));
         parts.put(prefix + "hair_left", parts.get("head").addChild(prefix + "hair_left", new ModelPartBuilder().uv(32, 84).cuboid(3.5f, -5f, -2f, 2, 16, 4), ModelTransform.pivot(0f, 0f, 0f)));
         parts.put(prefix + "hair_right", parts.get("head").addChild(prefix + "hair_right", new ModelPartBuilder().uv(48, 84).cuboid(-5.5f, -5f, -2f, 2, 16, 4), ModelTransform.pivot(0f, 0f, 0f)));
-        parts.put(prefix + "ahoge", parts.get("head").addChild(prefix + "ahoge", new ModelPartBuilder().uv(64, 64).cuboid(0f, -12f, 0f, 1, 4, 1), ModelTransform.pivot(0f, -8f, 0f)));
+        parts.put(prefix + "ahoge", parts.get("head").addChild(prefix + "ahoge", new ModelPartBuilder().uv(64, 64).cuboid(0f, -4f, 0f, 1, 4, 1), ModelTransform.pivot(0f, -8f, 0f)));
         parts.put(prefix + "ribbon", parts.get("head").addChild(prefix + "ribbon", new ModelPartBuilder().uv(72, 64).cuboid(-6f, -7f, 0f, 3, 3, 2), ModelTransform.pivot(0f, 0f, 0f)));
     }
     private static void buildKagami(Map<String, ModelPartData> parts, String prefix) {

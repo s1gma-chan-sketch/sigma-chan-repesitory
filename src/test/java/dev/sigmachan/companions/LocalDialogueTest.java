@@ -45,6 +45,22 @@ class LocalDialogueTest {
         assertEquals(CompanionProfile.KONATA, CompanionProfile.byId("rei").orElseThrow());
         assertTrue(CompanionProfile.byId("unknown").isEmpty());
     }
+    @Test void quickHowAreYouUsesNeedsInsteadOfGenericSmalltalk() {
+        var context = new DialogueContext("plains", false, false, "Сытость 60 · Вода 70 · Бодрость 80", "", "NONE", 0, 1);
+        String reply = LocalDialogue.reply(CompanionProfile.TSUKASA, new Bond(), "Как ты себя чувствуешь?", context);
+        assertTrue(reply.contains("Сытость 60"));
+        assertFalse(reply.contains("знаю мало"));
+        assertEquals(DialogueIntent.FEELINGS, DialogueIntent.detect("как ты", ""));
+    }
+    @Test void playerDistressGetsSupportNotEmptyStatus() {
+        String reply = LocalDialogue.reply(CompanionProfile.KAGAMI, new Bond(), "мне грустно и одиноко", ctx());
+        assertTrue(reply.contains("рядом") || reply.contains("чувства") || reply.contains("непросто"));
+    }
+    @Test void memoryCommandToleratesCaseAndExtraWhitespace() {
+        Bond bond = new Bond();
+        LocalDialogue.reply(CompanionProfile.KONATA, bond, "  ЗАПОМНИ    я люблю сады  ", ctx());
+        assertEquals("я люблю сады", bond.memories().get(0));
+    }
     @Test void antiRepeatAvoidsImmediateDuplicateWhenVariantsExist() {
         Bond bond = new Bond();
         String first = LocalDialogue.reply(CompanionProfile.KONATA, bond, "какие у тебя хобби?", ctx());

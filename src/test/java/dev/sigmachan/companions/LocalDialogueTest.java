@@ -1,23 +1,54 @@
 package dev.sigmachan.companions;
 
+import dev.sigmachan.companions.dialogue.DialogueContext;
+import dev.sigmachan.companions.dialogue.DialogueIntent;
 import dev.sigmachan.companions.dialogue.LocalDialogue;
 import dev.sigmachan.companions.relationship.Bond;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class LocalDialogueTest {
-    @Test void russianDialogueWorksOffline() {
-        String reply = LocalDialogue.reply(CompanionProfile.MIO, new Bond(), "Привет, кто ты?", "library", false, 1);
-        assertTrue(reply.contains("Мио")); assertTrue(reply.contains("26"));
+    private static DialogueContext ctx() { return new DialogueContext("plains", false, 1); }
+    @Test void charactersIntroduceThemselvesDistinctly() {
+        assertTrue(LocalDialogue.reply(CompanionProfile.KONATA, new Bond(), "Привет, кто ты?", ctx()).contains("Коната"));
+        assertTrue(LocalDialogue.reply(CompanionProfile.KAGAMI, new Bond(), "Привет, кто ты?", ctx()).contains("Кагами"));
+        assertTrue(LocalDialogue.reply(CompanionProfile.TSUKASA, new Bond(), "Привет, кто ты?", ctx()).contains("Цукаса"));
     }
-    @Test void explicitMemoryIsStored() {
+    @Test void explicitMemoryIsStoredAndCleared() {
         Bond bond = new Bond();
-        LocalDialogue.reply(CompanionProfile.AKARI, bond, "запомни я люблю сады", "plains", false, 1);
+        LocalDialogue.reply(CompanionProfile.TSUKASA, bond, "запомни я люблю сады", ctx());
         assertEquals("я люблю сады", bond.memories().get(0));
-        assertTrue(LocalDialogue.reply(CompanionProfile.AKARI, bond, "Что помнишь?", "plains", false, 2).contains("сады"));
+        assertTrue(LocalDialogue.reply(CompanionProfile.TSUKASA, bond, "Что помнишь?", ctx()).contains("сады"));
+        LocalDialogue.reply(CompanionProfile.TSUKASA, bond, "забудь всё", ctx());
+        assertTrue(bond.memories().isEmpty());
     }
-    @Test void romanceReplyRespectsRelationship() {
+    @Test void romanceBoundaryIsFriendlyAndFirm() {
+        String reply = LocalDialogue.reply(CompanionProfile.KAGAMI, new Bond(), "хочу свидание и поцелуй", ctx());
+        assertTrue(reply.contains("друзья")); assertTrue(reply.contains("недоступны"));
+    }
+    @Test void intentScoringHandlesRussianTopicsAndFollowUp() {
+        assertEquals(DialogueIntent.GAMES, DialogueIntent.detect("расскажи про игры и квест", ""));
+        assertEquals(DialogueIntent.FOOD, DialogueIntent.detect("хочу перекус корнет", ""));
+        assertEquals(DialogueIntent.STUDY, DialogueIntent.detect("помоги с домашней задачей по математике", ""));
+        assertEquals(DialogueIntent.FOOD, DialogueIntent.detect("почему", "FOOD"));
+        assertEquals(DialogueIntent.SMALLTALK, DialogueIntent.detect("почему", ""));
+    }
+    @Test void worldReplyUsesSnapshot() {
+        var context = new DialogueContext("cherry grove", true, true, "Сытость 50", "факел", "NONE", 1, 2);
+        String reply = LocalDialogue.reply(CompanionProfile.KAGAMI, new Bond(), "где мы и какая погода?", context);
+        assertTrue(reply.contains("cherry grove")); assertTrue(reply.contains("ночь")); assertTrue(reply.contains("дождь"));
+    }
+    @Test void profileAliasesMigrateAlphaWorlds() {
+        assertEquals(CompanionProfile.TSUKASA, CompanionProfile.byId("akari").orElseThrow());
+        assertEquals(CompanionProfile.KAGAMI, CompanionProfile.byId("mio").orElseThrow());
+        assertEquals(CompanionProfile.KONATA, CompanionProfile.byId("rei").orElseThrow());
+        assertTrue(CompanionProfile.byId("unknown").isEmpty());
+    }
+    @Test void antiRepeatAvoidsImmediateDuplicateWhenVariantsExist() {
         Bond bond = new Bond();
-        assertTrue(LocalDialogue.reply(CompanionProfile.REI, bond, "хочу свидание", "plains", false, 1).contains("доверие"));
+        String first = LocalDialogue.reply(CompanionProfile.KONATA, bond, "какие у тебя хобби?", ctx());
+        String second = LocalDialogue.reply(CompanionProfile.KONATA, bond, "расскажи про увлечения", ctx());
+        assertNotEquals(first, second);
     }
 }

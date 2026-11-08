@@ -1,18 +1,16 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
     {
       "item": "minecraft:paper"
     },
     {
-      "item": "minecraft:redstone"
-    },
-    {
-      "item": "minecraft:gold_nugget"
+      "item": "minecraft:sugar"
     }
   ],
   "result": {
-    "id": "sigma_companions:invitation_rei",
+    "id": "sigma_companions:invitation_tsukasa",
     "count": 1
   }
 }

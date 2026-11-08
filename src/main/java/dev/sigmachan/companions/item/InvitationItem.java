@@ -25,7 +25,7 @@ public class InvitationItem extends Item {
     @Override public ActionResult useOnBlock(ItemUsageContext context) {
         if (!(context.getPlayer() instanceof ServerPlayerEntity player) || !(context.getWorld() instanceof ServerWorld world)) return ActionResult.SUCCESS;
         BlockPos pos = context.getBlockPos().offset(context.getSide());
-        Box box = new Box(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1.9, pos.getZ() + 1);
+        Box box = new Box(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1.7, pos.getZ() + 1);
         if (!world.isSpaceEmpty(box) || !world.getBlockState(pos.down()).isSolidBlock(world, pos.down())) {
             player.sendMessage(Text.literal("Нужны твёрдый блок и два свободных блока над ним."), true);
             return ActionResult.FAIL;
@@ -38,17 +38,16 @@ public class InvitationItem extends Item {
         CompanionEntity companion = ModRegistry.COMPANION.create(world);
         if (companion == null) return ActionResult.FAIL;
         companion.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, player.getYaw(), 0);
-        companion.setProfile(profile);
-        companion.setOwner(player.getUuid());
+        companion.setProfile(profile); companion.setOwner(player.getUuid());
         companion.initialize(world, world.getLocalDifficulty(pos), SpawnReason.MOB_SUMMONED, null);
         world.spawnEntity(companion);
         context.getStack().decrementUnlessCreative(1, player);
-        player.sendMessage(Text.literal(profile.displayName() + ": Привет! Мне " + profile.age() + ". " + profile.introduction()), false);
+        player.sendMessage(Text.literal(profile.displayName() + ": " + profile.introduction()), false);
         return ActionResult.CONSUME;
     }
 
     @Override public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.literal(profile.displayName() + " · " + profile.age() + " лет · " + profile.occupation()));
+        tooltip.add(Text.literal(profile.displayName() + " · " + profile.interests()));
         tooltip.add(Text.translatable("item.sigma_companions.invitation.tooltip"));
     }
 }

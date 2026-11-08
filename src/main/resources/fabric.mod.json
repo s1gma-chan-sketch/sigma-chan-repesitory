@@ -3,7 +3,7 @@
   "id": "sigma_companions",
   "version": "${version}",
   "name": "Sigma Companions",
-  "description": "Original adult anime companions: friendship, consensual romance, a shared home and optional OpenAI/Anthropic dialogue. Minecraft 1.21.1 Fabric.",
+  "description": "Lucky Star fan companions: distinct models, friendship gestures, abstract needs and optional OpenAI/Anthropic dialogue. Minecraft 1.21.1 Fabric.",
   "authors": ["s1gma-chan-sketch"],
   "license": "MIT",
   "icon": "assets/sigma_companions/icon.png",
@@ -12,6 +12,9 @@
     "main": ["dev.sigmachan.companions.SigmaCompanions"],
     "client": ["dev.sigmachan.companions.client.SigmaCompanionsClient"]
   },
+  "mixins": [
+    { "config": "sigma_companions.client.mixins.json", "environment": "client" }
+  ],
   "depends": {
     "fabricloader": ">=0.16.14",
     "minecraft": "~1.21.1",

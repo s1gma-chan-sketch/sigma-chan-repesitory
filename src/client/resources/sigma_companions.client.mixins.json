@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.sigmachan.companions.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "sigma_companions.refmap.json",
+  "client": ["HeldItemRendererMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

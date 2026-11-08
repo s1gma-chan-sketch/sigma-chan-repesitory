@@ -1,11 +1,15 @@
 {
   "entity.sigma_companions.companion": "Спутница",
   "itemGroup.sigma_companions": "Sigma Companions",
-  "item.sigma_companions.invitation_akari": "Приглашение Акари",
-  "item.sigma_companions.invitation_mio": "Приглашение Мио",
-  "item.sigma_companions.invitation_rei": "Приглашение Рэй",
+  "item.sigma_companions.invitation_konata": "Приглашение Конаты",
+  "item.sigma_companions.invitation_kagami": "Приглашение Кагами",
+  "item.sigma_companions.invitation_tsukasa": "Приглашение Цукасы",
+  "item.sigma_companions.invitation_akari": "Старое приглашение → Цукаса",
+  "item.sigma_companions.invitation_mio": "Старое приглашение → Кагами",
+  "item.sigma_companions.invitation_rei": "Старое приглашение → Коната",
   "item.sigma_companions.invitation.tooltip": "Используй на твёрдом блоке, чтобы пригласить спутницу",
-  "item.sigma_companions.promise_ring": "Кольцо обещания",
+  "item.sigma_companions.chocolate_cornet": "Шоколадный корнет",
+  "item.sigma_companions.promise_ring": "Старое кольцо · романтика отключена",
   "key.sigma_companions.menu": "Открыть меню спутницы",
   "category.sigma_companions": "Sigma Companions"
 }

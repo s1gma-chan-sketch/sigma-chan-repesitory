@@ -1,18 +1,16 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
     {
       "item": "minecraft:paper"
     },
     {
-      "item": "minecraft:book"
-    },
-    {
-      "item": "minecraft:gold_nugget"
+      "item": "minecraft:cookie"
     }
   ],
   "result": {
-    "id": "sigma_companions:invitation_mio",
+    "id": "sigma_companions:invitation_konata",
     "count": 1
   }
 }

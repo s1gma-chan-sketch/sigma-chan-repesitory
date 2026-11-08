@@ -1,13 +1,14 @@
 package dev.sigmachan.companions.client;
 
-import dev.sigmachan.companions.CompanionProfile;
 import dev.sigmachan.companions.network.ActionC2S;
 import dev.sigmachan.companions.network.CompanionStateS2C;
 import dev.sigmachan.companions.network.DialogueS2C;
+import dev.sigmachan.companions.network.GestureS2C;
 import dev.sigmachan.companions.registry.ModRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -28,8 +29,11 @@ public class SigmaCompanionsClient implements ClientModInitializer {
             if (context.client().currentScreen instanceof CompanionScreen screen && screen.entityId() == payload.entityId()) screen.addReply(payload.message());
             else context.client().inGameHud.getChatHud().addMessage(Text.literal("[" + payload.speaker() + "] " + payload.message()));
         }));
+        ClientPlayNetworking.registerGlobalReceiver(GestureS2C.ID, (payload, context) -> context.client().execute(() -> FirstPersonGesture.start(payload.gestureId(), payload.duration())));
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> FirstPersonGesture.reset());
         KeyBinding menu = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.sigma_companions.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.sigma_companions"));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            FirstPersonGesture.tick();
             while (menu.wasPressed()) {
                 if (client.crosshairTarget instanceof net.minecraft.util.hit.EntityHitResult hit && hit.getEntity() instanceof dev.sigmachan.companions.entity.CompanionEntity companion && ClientPlayNetworking.canSend(ActionC2S.ID)) {
                     ClientPlayNetworking.send(new ActionC2S(companion.getId(), "open", ""));

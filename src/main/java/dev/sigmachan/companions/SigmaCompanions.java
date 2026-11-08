@@ -33,6 +33,6 @@ public final class SigmaCompanions implements ModInitializer {
         });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> { if (dialogue != null) dialogue.forget(handler.player.getUuid()); });
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> { if (dialogue != null) dialogue.close(); dialogue = null; });
-        LOGGER.info("Sigma Companions initialized: original adult characters, local friendship and consensual romance.");
+        LOGGER.info("Sigma Companions initialized: Lucky Star fan companions, friendship-only interactions and abstract needs.");
     }
 }

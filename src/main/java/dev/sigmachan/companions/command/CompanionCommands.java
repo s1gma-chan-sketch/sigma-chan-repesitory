@@ -27,6 +27,9 @@ public final class CompanionCommands {
             root.then(CommandManager.literal("stay").executes(context -> target(context.getSource(), "stay")));
             root.then(CommandManager.literal("wander").executes(context -> target(context.getSource(), "wander")));
             root.then(CommandManager.literal("home").executes(context -> target(context.getSource(), "home")));
+            for (String action : new String[]{"wave", "high_five", "hug", "pet", "snack", "drink", "rest", "status"}) {
+                root.then(CommandManager.literal(action).executes(context -> target(context.getSource(), action.equals("status") ? null : action)));
+            }
             root.then(CommandManager.literal("forget").executes(context -> {
                 ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
                 dev.sigmachan.companions.SigmaCompanions.ai().forget(player.getUuid());
@@ -49,7 +52,7 @@ public final class CompanionCommands {
     private static CompanionEntity nearest(ServerCommandSource source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayerOrThrow();
         return player.getWorld().getEntitiesByClass(CompanionEntity.class, player.getBoundingBox().expand(6), entity -> entity.isAlive() && player.canSee(entity))
-                .stream().min(java.util.Comparator.comparingDouble(player::squaredDistanceTo)).orElseThrow(() -> new com.mojang.brigadier.exceptions.SimpleCommandExceptionType(Text.literal("Подойди к спутнику на расстояние до 6 блоков: /sigma summon akari")).create());
+                .stream().min(java.util.Comparator.comparingDouble(player::squaredDistanceTo)).orElseThrow(() -> new com.mojang.brigadier.exceptions.SimpleCommandExceptionType(Text.literal("Подойди к спутнику на расстояние до 6 блоков: /sigma summon konata")).create());
     }
     private static int target(ServerCommandSource source, String action) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         CompanionEntity companion = nearest(source);
@@ -65,7 +68,7 @@ public final class CompanionCommands {
         companion.setProfile(profile); companion.setOwner(player.getUuid());
         if (!player.getWorld().isSpaceEmpty(companion.getBoundingBox())) { source.sendError(Text.literal("Рядом недостаточно места. Освободи два блока над землёй.")); return 0; }
         player.getWorld().spawnEntity(companion);
-        source.sendFeedback(() -> Text.literal("Приглашена " + profile.displayName() + ", " + profile.age() + " лет. ПКМ — меню; Shift+ПКМ — следовать/ждать."), false);
+        source.sendFeedback(() -> Text.literal("Приглашена " + profile.displayName() + ". ПКМ — меню; Shift+ПКМ — следовать/ждать."), false);
         return 1;
     }
     private CompanionCommands() {}

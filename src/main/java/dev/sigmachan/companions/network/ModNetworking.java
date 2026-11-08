@@ -18,6 +18,7 @@ public final class ModNetworking {
         PayloadTypeRegistry.playC2S().register(ActionC2S.ID, ActionC2S.CODEC);
         PayloadTypeRegistry.playS2C().register(CompanionStateS2C.ID, CompanionStateS2C.CODEC);
         PayloadTypeRegistry.playS2C().register(DialogueS2C.ID, DialogueS2C.CODEC);
+        PayloadTypeRegistry.playS2C().register(GestureS2C.ID, GestureS2C.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(ActionC2S.ID, (payload, context) -> {
             ServerPlayerEntity player = context.player();
             // Fabric play handlers run on the server thread. Never trust client entity references or trust values.
@@ -38,6 +39,9 @@ public final class ModNetworking {
     public static void sendState(ServerPlayerEntity player, CompanionStateS2C state) {
         if (ServerPlayNetworking.canSend(player, CompanionStateS2C.ID)) ServerPlayNetworking.send(player, state);
         else if (!state.notice().isEmpty()) player.sendMessage(Text.literal(state.notice()), false);
+    }
+    public static void sendGesture(ServerPlayerEntity player, GestureS2C gesture) {
+        if (ServerPlayNetworking.canSend(player, GestureS2C.ID)) ServerPlayNetworking.send(player, gesture);
     }
     public static void sendDialogue(ServerPlayerEntity player, int entityId, String speaker, String message) {
         if (ServerPlayNetworking.canSend(player, DialogueS2C.ID)) ServerPlayNetworking.send(player, new DialogueS2C(entityId, speaker, message));

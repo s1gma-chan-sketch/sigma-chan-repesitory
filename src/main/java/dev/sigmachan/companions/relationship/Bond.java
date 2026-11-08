@@ -4,35 +4,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Pure game rules, independent of Minecraft. All mutation happens on the server. */
+/** Friendship-only bond. Legacy romance flags are deliberately not loaded or exposed. */
 public final class Bond {
     public static final int FRIEND = 15;
     public static final int CLOSE = 35;
-    public static final int ROMANCE = 55;
-    public static final int MARRIAGE = 80;
+    public static final int BEST_FRIEND = 70;
     private int trust;
-    private boolean romanceConsent;
-    private boolean dating;
-    private boolean married;
     private boolean aiConsent;
     private long lastGiftDay = Long.MIN_VALUE;
     private int giftsToday;
     private final ArrayList<String> memories = new ArrayList<>();
+    private String lastTopic = "";
+    private int topicTurns;
+    private final ArrayList<String> recentReplies = new ArrayList<>();
 
     public int trust() { return trust; }
     public void setTrust(int value) { trust = Math.clamp(value, 0, 100); }
-    public boolean addTrust(int amount) {
-        int before = trust;
-        setTrust(trust + amount);
-        return before != trust;
-    }
-    public boolean romanceConsent() { return romanceConsent; }
-    public void setRomanceConsent(boolean value) {
-        romanceConsent = value;
-        if (!value) dating = false;
-    }
-    public boolean dating() { return dating; }
-    public boolean married() { return married; }
+    public boolean addTrust(int amount) { int before = trust; setTrust(trust + amount); return before != trust; }
     public boolean aiConsent() { return aiConsent; }
     public void setAiConsent(boolean value) { aiConsent = value; }
     public List<String> memories() { return Collections.unmodifiableList(memories); }
@@ -44,16 +32,14 @@ public final class Bond {
         while (memories.size() > 6) memories.remove(0);
     }
     public void restoreMemory(String text) { remember(text); }
+    public void clearMemories() { memories.clear(); }
     public String stage() {
-        if (married) return "Семья";
-        if (dating) return "Романтика";
-        if (trust >= ROMANCE) return "Близкие друзья";
+        if (trust >= BEST_FRIEND) return "Лучшие друзья";
+        if (trust >= CLOSE) return "Близкие друзья";
         if (trust >= FRIEND) return "Друзья";
         return "Знакомство";
     }
-    public boolean canGift(long day) {
-        return day != lastGiftDay || giftsToday < 3;
-    }
+    public boolean canGift(long day) { return day != lastGiftDay || giftsToday < 3; }
     public void recordGift(long day) {
         if (!canGift(day)) throw new IllegalStateException("Daily gift limit reached");
         if (day != lastGiftDay) { lastGiftDay = day; giftsToday = 0; }
@@ -61,24 +47,16 @@ public final class Bond {
     }
     public long lastGiftDay() { return lastGiftDay; }
     public int giftsToday() { return giftsToday; }
-    public void restoreGiftCounter(long day, int count) {
-        lastGiftDay = day;
-        giftsToday = Math.clamp(count, 0, 3);
+    public void restoreGiftCounter(long day, int count) { lastGiftDay = day; giftsToday = Math.clamp(count, 0, 3); }
+    public String lastTopic() { return lastTopic; }
+    public int topicTurns() { return topicTurns; }
+    public void setTopic(String topic) {
+        if (topic.equals(lastTopic)) topicTurns++; else { lastTopic = topic; topicTurns = 1; }
     }
-    public boolean startDate() {
-        if (!romanceConsent || trust < ROMANCE || dating || married) return false;
-        dating = true;
-        return true;
-    }
-    public boolean marry() {
-        if (!romanceConsent || !dating || trust < MARRIAGE || married) return false;
-        married = true;
-        return true;
-    }
-    public void separate() {
-        dating = false;
-        married = false;
-        romanceConsent = false;
-        setTrust(Math.min(trust, 40));
+    public void restoreTopic(String topic, int turns) { lastTopic = topic == null ? "" : topic.substring(0, Math.min(24, topic.length())); topicTurns = Math.clamp(turns, 0, 99); }
+    public java.util.List<String> recentReplies() { return Collections.unmodifiableList(recentReplies); }
+    public void rememberReply(String reply) {
+        recentReplies.add(reply);
+        while (recentReplies.size() > 5) recentReplies.remove(0);
     }
 }

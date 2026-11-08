@@ -1,0 +1,42 @@
+{
+  "texture_size": [256, 256],
+  "common": [
+    {"name":"head","parent":null,"uv":[0,0],"size":[8,8,8],"offset":[-4,-8,-4],"pivot":[0,7,0]},
+    {"name":"torso","parent":null,"uv":[0,20],"size":[7,9,4],"offset":[-3.5,0,-2],"pivot":[0,7,0]},
+    {"name":"skirt","parent":"torso","uv":[0,38],"size":[9,3,6],"offset":[-4.5,-1,-3],"pivot":[0,7,0]},
+    {"name":"left_arm","parent":null,"uv":[32,20],"size":[3,9,4],"offset":[-1,-1,-2],"pivot":[4.5,8,0]},
+    {"name":"right_arm","parent":null,"uv":[48,20],"size":[3,9,4],"offset":[-2,-1,-2],"pivot":[-4.5,8,0]},
+    {"name":"left_leg","parent":null,"uv":[64,20],"size":[3,8,3],"offset":[-1.5,0,-1.5],"pivot":[1.8,16,0]},
+    {"name":"right_leg","parent":null,"uv":[80,20],"size":[3,8,3],"offset":[-1.5,0,-1.5],"pivot":[-1.8,16,0]},
+    {"name":"hair_cap","parent":"head","uv":[0,64],"size":[9,4,9],"offset":[-4.5,-8.5,-4.5],"pivot":[0,0,0]},
+    {"name":"fringe","parent":"head","uv":[40,64],"size":[8,3,1],"offset":[-4,-7.5,-4.7],"pivot":[0,0,0]},
+    {"name":"snack","parent":"right_arm","uv":[100,20],"size":[2,4,2],"offset":[-1,7,-3],"pivot":[0,0,0]},
+    {"name":"cup","parent":"right_arm","uv":[112,20],"size":[3,3,3],"offset":[-1.5,7,-4],"pivot":[0,0,0]}
+  ],
+  "profiles": {
+    "konata": [
+      {"name":"hair_back","parent":"head","uv":[0,84],"size":[9,18,3],"offset":[-4.5,-5,3],"pivot":[0,0,0]},
+      {"name":"hair_left","parent":"head","uv":[32,84],"size":[2,16,4],"offset":[3.5,-5,-2],"pivot":[0,0,0]},
+      {"name":"hair_right","parent":"head","uv":[48,84],"size":[2,16,4],"offset":[-5.5,-5,-2],"pivot":[0,0,0]},
+      {"name":"ahoge","parent":"head","uv":[64,64],"size":[1,4,1],"offset":[0,-12,0],"pivot":[0,-8,0]},
+      {"name":"ribbon","parent":"head","uv":[72,64],"size":[3,3,2],"offset":[-6,-7,0],"pivot":[0,0,0]}
+    ],
+    "kagami": [
+      {"name":"hair_back","parent":"head","uv":[0,84],"size":[9,7,3],"offset":[-4.5,-5,3],"pivot":[0,0,0]},
+      {"name":"hair_left","parent":"head","uv":[32,84],"size":[2,7,4],"offset":[3.5,-5,-2],"pivot":[0,0,0]},
+      {"name":"hair_right","parent":"head","uv":[48,84],"size":[2,7,4],"offset":[-5.5,-5,-2],"pivot":[0,0,0]},
+      {"name":"tail_left","parent":"head","uv":[64,84],"size":[3,15,3],"offset":[-1.5,-1,-1.5],"pivot":[5.3,-5,2]},
+      {"name":"tail_right","parent":"head","uv":[80,84],"size":[3,15,3],"offset":[-1.5,-1,-1.5],"pivot":[-5.3,-5,2]},
+      {"name":"ribbon_left","parent":"head","uv":[96,64],"size":[3,3,3],"offset":[-1.5,-1.5,-1.5],"pivot":[5.3,-5,2]},
+      {"name":"ribbon_right","parent":"head","uv":[112,64],"size":[3,3,3],"offset":[-1.5,-1.5,-1.5],"pivot":[-5.3,-5,2]}
+    ],
+    "tsukasa": [
+      {"name":"hair_back","parent":"head","uv":[0,84],"size":[9,8,4],"offset":[-4.5,-5,2.5],"pivot":[0,0,0]},
+      {"name":"hair_left","parent":"head","uv":[32,84],"size":[3,7,4],"offset":[3,-5,-2],"pivot":[0,0,0]},
+      {"name":"hair_right","parent":"head","uv":[48,84],"size":[3,7,4],"offset":[-6,-5,-2],"pivot":[0,0,0]},
+      {"name":"bow_left","parent":"head","uv":[64,72],"size":[4,3,2],"offset":[-4,-3,-1],"pivot":[-1,-8,0]},
+      {"name":"bow_right","parent":"head","uv":[80,72],"size":[4,3,2],"offset":[0,-3,-1],"pivot":[1,-8,0]},
+      {"name":"bow_knot","parent":"head","uv":[96,72],"size":[2,2,2],"offset":[-1,-2,-1],"pivot":[0,-8,0]}
+    ]
+  }
+}

@@ -8,6 +8,9 @@ base { archivesName = project.archives_base_name }
 
 loom {
     splitEnvironmentSourceSets()
+    mixin {
+        defaultRefmapName = 'sigma_companions.refmap.json'
+    }
     mods {
         sigma_companions {
             sourceSet sourceSets.main

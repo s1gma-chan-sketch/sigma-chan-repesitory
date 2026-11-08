@@ -8,7 +8,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 public class CompanionRenderer extends MobEntityRenderer<CompanionEntity, CompanionModel> {
-    public CompanionRenderer(EntityRendererFactory.Context context) { super(context, new CompanionModel(context.getPart(CompanionModel.LAYER)), 0.35f); }
+    public CompanionRenderer(EntityRendererFactory.Context context) { super(context, new CompanionModel(context.getPart(CompanionModel.LAYER)), 0.3f); }
     @Override public Identifier getTexture(CompanionEntity entity) { return ModRegistry.id("textures/entity/" + entity.profile().id() + ".png"); }
-    @Override protected void scale(CompanionEntity entity, MatrixStack matrices, float tickDelta) { matrices.scale(0.94f, 0.94f, 0.94f); }
+    @Override protected void scale(CompanionEntity entity, MatrixStack matrices, float tickDelta) {
+        float scale = entity.profile().scale();
+        matrices.scale(scale, scale, scale);
+    }
 }

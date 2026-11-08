@@ -1,11 +1,15 @@
 {
   "entity.sigma_companions.companion": "Companion",
   "itemGroup.sigma_companions": "Sigma Companions",
-  "item.sigma_companions.invitation_akari": "Akari's invitation",
-  "item.sigma_companions.invitation_mio": "Mio's invitation",
-  "item.sigma_companions.invitation_rei": "Rei's invitation",
-  "item.sigma_companions.invitation.tooltip": "Use on a solid block to invite an adult companion",
-  "item.sigma_companions.promise_ring": "Promise ring",
+  "item.sigma_companions.invitation_konata": "Konata Invitation",
+  "item.sigma_companions.invitation_kagami": "Kagami Invitation",
+  "item.sigma_companions.invitation_tsukasa": "Tsukasa Invitation",
+  "item.sigma_companions.invitation_akari": "Legacy Invitation → Tsukasa",
+  "item.sigma_companions.invitation_mio": "Legacy Invitation → Kagami",
+  "item.sigma_companions.invitation_rei": "Legacy Invitation → Konata",
+  "item.sigma_companions.invitation.tooltip": "Use on a solid block to invite a companion",
+  "item.sigma_companions.chocolate_cornet": "Chocolate Cornet",
+  "item.sigma_companions.promise_ring": "Legacy Ring · romance disabled",
   "key.sigma_companions.menu": "Open companion menu",
   "category.sigma_companions": "Sigma Companions"
 }

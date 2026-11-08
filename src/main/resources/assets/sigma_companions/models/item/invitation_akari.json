@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "sigma_companions:item/invitation_akari"
+    "layer0": "sigma_companions:item/invitation_tsukasa"
   }
 }

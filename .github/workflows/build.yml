@@ -35,6 +35,23 @@ jobs:
           path: |
             build-ci.log
             build/reports/tests/test/
+      - name: Inspect production JAR
+        run: |
+          python3 - <<'PY'
+          import hashlib, pathlib, zipfile
+          jars = [p for p in pathlib.Path('build/libs').glob('*.jar') if not p.name.endswith('-sources.jar')]
+          assert len(jars) == 1, jars
+          jar = jars[0]
+          with zipfile.ZipFile(jar) as z:
+              names = set(z.namelist())
+              assert z.testzip() is None
+              assert 'fabric.mod.json' in names
+              assert 'sigma_companions.client.mixins.json' in names
+              assert 'sigma_companions.refmap.json' in names
+              assert 'dev/sigmachan/companions/client/mixin/HeldItemRendererMixin.class' in names
+              assert not any(n.startswith('dev/sigmachan/companions/') and n.endswith('Test.class') for n in names)
+          print(jar.name, jar.stat().st_size, hashlib.sha256(jar.read_bytes()).hexdigest())
+          PY
       - name: Inspect resources
         run: python3 tools/validate_resources.py
       - uses: actions/upload-artifact@v4
@@ -65,7 +82,7 @@ jobs:
         run: |
           jar=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' | head -1)
           tag="build-${GITHUB_RUN_ID}"
-          gh release create "$tag" "$jar" --target "$GITHUB_SHA" --title "Sigma Companions 0.1.0 — verified build" --notes "Fabric 1.21.1. Unit tests and dedicated-server smoke test passed. Download the JAR below, not the source archives. Draft release: not announced as a stable version." --draft
+          gh release create "$tag" "$jar" --target "$GITHUB_SHA" --title "Sigma Companions 0.2.0 — verified alpha build" --notes "Fabric 1.21.1 alpha: Lucky Star fan companions, friendship-only gestures, abstract needs. Unit tests and dedicated-server smoke test passed. Download the JAR below, not the source archives. Draft prerelease: not a stable release." --draft
           sha256sum "$jar"
           blob=$(gh api "repos/${GITHUB_REPOSITORY}/git/blobs" --method POST -f encoding=base64 -f content="$(base64 -w0 "$jar")" --jq .sha)
           echo "::notice::VERIFIED_JAR_BLOB=${blob}"

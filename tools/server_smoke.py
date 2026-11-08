@@ -42,16 +42,19 @@ try:
             raise RuntimeError(f'Server exited unexpectedly: {proc.returncode}')
         log = ''.join(lines)
         if stage == 0 and 'Done (' in log:
-            proc.stdin.write('summon sigma_companions:companion 0 -60 0 {Profile:"mio"}\n')
+            proc.stdin.write('summon sigma_companions:companion 0 -60 0 {Profile:"konata",Needs:{Satiety:50d,Hydration:80d,Energy:90d,PendingNutrition:24,DigestionSeconds:3}}\n')
             proc.stdin.flush()
             stage = 1
-            next_command_at = time.monotonic() + 3
+            next_command_at = time.monotonic() + 5
         elif stage == 1 and time.monotonic() >= next_command_at:
-            proc.stdin.write('data get entity @e[type=sigma_companions:companion,limit=1] Profile\n')
+            proc.stdin.write('data get entity @e[type=sigma_companions:companion,x=0,y=-60,z=0,distance=..2,limit=1] Profile\n')
+            proc.stdin.write('data get entity @e[type=sigma_companions:companion,x=0,y=-60,z=0,distance=..2,limit=1] Needs\n')
+            proc.stdin.write('summon sigma_companions:companion 4 -60 0 {Profile:"mio"}\n')
             proc.stdin.flush()
             stage = 2
             next_command_at = time.monotonic() + 3
         elif stage == 2 and time.monotonic() >= next_command_at:
+            proc.stdin.write('data get entity @e[type=sigma_companions:companion,x=4,y=-60,z=0,distance=..2,limit=1] Profile\n')
             proc.stdin.write('save-all flush\nstop\n')
             proc.stdin.flush()
             stage = 3
@@ -64,7 +67,8 @@ try:
     reader_thread.join(timeout=5)
     log = ''.join(lines)
     for marker in ['Loading Minecraft 1.21.1', 'Sigma Companions initialized',
-                   'has the following entity data: "mio"', 'Stopping server']:
+                   'has the following entity data: "konata"', 'has the following entity data: "kagami"',
+                   'DigestionSeconds: 0', 'PendingNutrition: 0', 'Stopping server']:
         if marker not in log:
             raise RuntimeError(f'Missing smoke marker: {marker}')
     for error in ['Exception in server tick loop', 'Failed to start the minecraft server',
@@ -74,7 +78,7 @@ try:
             raise RuntimeError(f'Server error: {error}')
     if proc.returncode != 0:
         raise RuntimeError(f'Server exit code: {proc.returncode}')
-    print('PASS: Fabric 1.21.1 startup, companion spawn, profile NBT readback, clean shutdown.')
+    print('PASS: Fabric 1.21.1 startup, Konata spawn, delayed needs NBT readback, legacy profile migration, clean shutdown.')
 except BaseException as error:
     print(f'::error::Smoke failed at stage {stage}: {error}', flush=True)
     for line in lines[-100:]:

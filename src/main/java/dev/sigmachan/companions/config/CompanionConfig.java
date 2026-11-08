@@ -23,6 +23,7 @@ public final class CompanionConfig {
     public int requestsPerMinute = 6;
     public int maxCompanionsPerPlayer = 8;
     public boolean ambientDialogue = true;
+    public int digestionSeconds = 90;
 
     public void validate() {
         if (provider == null) provider = "local";
@@ -36,6 +37,7 @@ public final class CompanionConfig {
         timeoutSeconds = Math.clamp(timeoutSeconds, 3, 30);
         requestsPerMinute = Math.clamp(requestsPerMinute, 1, 30);
         maxCompanionsPerPlayer = Math.clamp(maxCompanionsPerPlayer, 1, 32);
+        digestionSeconds = Math.clamp(digestionSeconds, 5, 600);
     }
 
     public static CompanionConfig load(Path directory) {

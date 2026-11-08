@@ -1,18 +1,16 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
     {
       "item": "minecraft:paper"
     },
     {
-      "item": "minecraft:poppy"
-    },
-    {
-      "item": "minecraft:gold_nugget"
+      "item": "minecraft:book"
     }
   ],
   "result": {
-    "id": "sigma_companions:invitation_akari",
+    "id": "sigma_companions:invitation_kagami",
     "count": 1
   }
 }
